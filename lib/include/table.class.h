@@ -1,0 +1,24 @@
+#ifndef TABLECLASS
+#define TABLECLASS
+
+#include "column.class.h"
+
+#include <string>
+#include <vector>
+#include <libgda/libgda.h>
+#include <sql-parser/gda-sql-parser.h>
+
+class table
+{
+	public:
+		table(std::string schemaname, std::string tablename);
+		void output();
+		bool loadColumns(GdaConnection *dbconn);
+
+	private:
+		std::string tablename;
+		std::string schemaname;
+		std::vector<column> columnlist;
+};
+
+#endif //TABLECLASS
