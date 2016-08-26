@@ -53,12 +53,13 @@ class Log
 		{
 			if(!this->endl)
 			{
-				std::cout << std::endl;
+				//std::cout << std::endl;
 			}
 		}
 };
 
-#define dbg Log(__FUNCTION__,KGRN)
-#define err Log(__FUNCTION__,KRED)
+#define dbg Log(__FUNCTION__,KBLU)
+#define green Log(__FUNCTION__,KGRN)
+#define red Log(__FUNCTION__,KRED)
 
 #endif //DBANALYZE_LOG

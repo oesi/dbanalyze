@@ -11,7 +11,6 @@ database::database(std::string type, std::string host, int port, std::string use
 	dbg << "Connecting to Type:" << type
 		<< " Host:" << host
 		<< " User:" << user
-		<< " Password:" << password
 		<< " DBname:" << dbname;
 
 	std::string connstr, authstr;
@@ -79,6 +78,7 @@ bool database::loadColumns()
 	for(unsigned int i = 0; i < this->tablelist.size(); i++)
 	{
 		tablelist[i].loadColumns(this->dbconn);
+		tablelist[i].loadConstraints(this->dbconn);
 	}
 }
 

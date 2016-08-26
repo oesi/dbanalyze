@@ -39,7 +39,7 @@ ret_cli=$?
 
 # Start program or display error messages
 if [[ ( $ret_cli -eq 0 ) && ( $ret_lib -eq 0 ) ]]; then
-	./cli/bin/dbanalyze_cli -h localhost -p 5433 -u dbanalyze -d analyzetest -t PostgreSQL
+	./cli/bin/dbanalyze_cli -h localhost -p 5433 -u dbanalyze -d analyzetest -t PostgreSQL -w dbanalyze
 else
 	lines="`cat compilerlog | wc -l`"
 	echo '========== Compilation Failed =========';
