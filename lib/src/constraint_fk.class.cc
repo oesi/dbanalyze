@@ -9,6 +9,7 @@ constraint_fk::constraint_fk(std::string constraint_schema, std::string constrai
 {
 	this->constraint_schema = constraint_schema;
 	this->constraint_name = constraint_name;
+	this->type=1;
 }
 
 void constraint_fk::addTarget(std::string table_schema, std::string table_name, std::string table_column)

@@ -17,7 +17,7 @@ class table
 		bool loadColumns(GdaConnection *dbconn);
 		bool loadConstraints(GdaConnection *dbconn);
 
-	private:
+	
 		std::string tablename;
 		std::string schemaname;
 		std::vector<column> columnlist;

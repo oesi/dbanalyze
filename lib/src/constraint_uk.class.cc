@@ -9,6 +9,7 @@ constraint_uk::constraint_uk(std::string constraint_schema, std::string constrai
 {
 	this->constraint_schema = constraint_schema;
 	this->constraint_name = constraint_name;
+	this->type = 2;
 }
 
 constraint_uk::~constraint_uk()

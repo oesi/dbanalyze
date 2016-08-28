@@ -18,7 +18,7 @@ void table::output()
 	std::cout << " ( PK:";
 	if(this->pk.size()==0)
 	{
-		red << " missing";
+		std::cout << " missing";
 	}
 	else
 	{

@@ -23,9 +23,9 @@ void constraint::addSource(std::string table_schema, std::string table_name, std
 
 void constraint::output()
 {
-	green << "⚷";
+	std::cout << "⚷";
 	for(unsigned int i=0;i < this->source.size();i++)
 	{
-		green << this->source[i].column;
+		std::cout << this->source[i].column;
 	}
 }

@@ -61,6 +61,7 @@ int main (int argc, char *argv[])
 	db.loadTables();
 	db.loadColumns();
 	db.output();
+	db.analyze();
 	return 0;
 }
 

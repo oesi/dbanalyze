@@ -8,6 +8,15 @@
 #include <sql-parser/gda-sql-parser.h>
 
 
+struct statistic
+{
+	int num_tables;
+	std::vector<table*> tables_without_pk;
+	int num_columns;
+	int num_fk;
+	int num_uk;
+};
+
 class database
 {
 	public:
@@ -16,10 +25,12 @@ class database
 		bool loadTables();
 		void output();
 		bool loadColumns();
+		void analyze();
 
 	private:
 		std::vector<table> tablelist;
 		GdaConnection *dbconn;
+		statistic stat;
 };
 
 #endif //DATABASECLASS

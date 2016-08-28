@@ -1,6 +1,8 @@
 #include "database.h"
 #include "database.class.h"
 #include "table.class.h"
+#include "constraint_fk.class.h"
+#include "constraint_uk.class.h"
 #include <iostream>
 #include "log.h"
 
@@ -43,7 +45,7 @@ bool database::loadTables()
 	GdaDataModel *data_model;
 	GdaSqlParser *parser;
 	GdaStatement *stmt;
-	const char *sql = "SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema NOT IN('pg_catalog','information_schema')";
+	const char *sql = "SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema NOT IN('pg_catalog','information_schema') AND table_type='BASE TABLE'";
 	GError *error = NULL;
 
 	parser = gda_connection_create_parser (this->dbconn);
@@ -80,6 +82,52 @@ bool database::loadColumns()
 		tablelist[i].loadColumns(this->dbconn);
 		tablelist[i].loadConstraints(this->dbconn);
 	}
+}
+
+void database::analyze()
+{
+	/*
+	Number of Tables
+	Number of Tables Without PK
+	AVG Number of Columns per Table
+	Number of FK
+	Size of Tables
+	*/
+	this->stat.num_tables = this->tablelist.size();
+	this->stat.num_columns = 0;
+	this->stat.num_fk = 0;
+	this->stat.num_uk = 0;
+
+	for(unsigned int i = 0; i < this->tablelist.size(); i++)
+	{
+		if(tablelist[i].pk.size()==0)
+			this->stat.tables_without_pk.push_back(&tablelist[i]);
+
+		this->stat.num_columns += this->tablelist[i].columnlist.size();
+
+		for(unsigned int j = 0; j < this->tablelist[i].constraintlist.size(); j++)
+		{
+			if(this->tablelist[i].constraintlist[j].type==1)
+			{
+				this->stat.num_fk++;
+			}
+			else if(this->tablelist[i].constraintlist[j].type==2)
+			{
+				this->stat.num_uk++;
+			}
+		}
+	}
+	//if( constraint_fk* test_cstr = dynamic_cast< constraint_if* >( &constr ) )
+
+	green << "Number of Tables:" << this->stat.num_tables;
+	green << "Number of Tables without PK:" << this->stat.tables_without_pk.size();
+	for(unsigned int j = 0; j < this->stat.tables_without_pk.size(); j++)
+	{
+		red << "\t" << this->stat.tables_without_pk[j]->schemaname << "." << this->stat.tables_without_pk[j]->tablename;
+	}
+	green << "Number of Columns: " << this->stat.num_columns;
+	green << "Number of FK: " << this->stat.num_fk;
+	green << "Number of UK: " << this->stat.num_uk;
 }
 
 void database::output()
