@@ -60,6 +60,7 @@ int main (int argc, char *argv[])
 	std::vector<table> tables;
 	db.loadTables();
 	db.loadColumns();
+	db.loadConstraints();
 	db.output();
 	db.analyze();
 	return 0;

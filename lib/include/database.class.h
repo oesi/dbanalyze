@@ -24,8 +24,10 @@ class database
 		~database();
 		bool loadTables();
 		void output();
-		bool loadColumns();
+		void loadColumns();
 		void analyze();
+		void loadConstraints();
+		table* getTable(std::string schemaname, std::string tablename);
 
 	private:
 		std::vector<table> tablelist;

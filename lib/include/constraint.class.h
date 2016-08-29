@@ -19,12 +19,11 @@ class constraint
 	public:
 		constraint();
 		constraint(std::string constraint_schema, std::string constraint_name);
-		~constraint();
+		virtual ~constraint();
 		void addSource(std::string table_schema, std::string table_name, std::string table_column);
 		void output();
 
 	//protected:
-		int type; // 1=FK, 2=UK
 		std::string constraint_schema;
 		std::string constraint_name;
 		std::vector<ConstraintData> source;

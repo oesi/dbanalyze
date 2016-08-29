@@ -14,15 +14,12 @@ class table
 	public:
 		table(std::string schemaname, std::string tablename);
 		void output();
-		bool loadColumns(GdaConnection *dbconn);
-		bool loadConstraints(GdaConnection *dbconn);
 
-	
 		std::string tablename;
 		std::string schemaname;
 		std::vector<column> columnlist;
 		std::vector<std::string> pk;
-		std::vector<constraint> constraintlist;
+		std::vector<constraint*> constraintlist;
 };
 
 #endif //TABLECLASS
