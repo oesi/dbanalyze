@@ -20,3 +20,9 @@ constraint_fk::~constraint_fk()
 {
 
 }
+
+void constraint_fk::output()
+{
+ 	out_fk << "⚷FK:";
+	out_fk << this->constraint_name;
+}

@@ -9,6 +9,7 @@ class constraint_uk: public constraint
 		constraint_uk();
 		constraint_uk(std::string constraint_schema, std::string constraint_name);
 		~constraint_uk();
+		void output();
 };
 
 #endif //CONSTRAINT_uk_CLASS

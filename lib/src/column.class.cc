@@ -12,5 +12,10 @@ column::column(std::string columnname, std::string datatype, std::string charact
 
 void column::output()
 {
-	std::cout << "\t" << this->columnname << " " << this->datatype << std::endl;
+	std::cout << "\t" << this->columnname << " " << this->datatype;
+}
+
+std::string column::getColumnname()
+{
+	return this->columnname;
 }

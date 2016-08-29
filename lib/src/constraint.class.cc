@@ -26,6 +26,6 @@ void constraint::output()
 	std::cout << "⚷";
 	for(unsigned int i=0;i < this->source.size();i++)
 	{
-		std::cout << this->source[i].column;
+		std::cout << this->constraint_name;
 	}
 }

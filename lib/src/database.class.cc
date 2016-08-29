@@ -1,10 +1,11 @@
 #include "database.h"
+#include "log.h"
 #include "database.class.h"
-#include "table.class.h"
 #include "constraint_fk.class.h"
 #include "constraint_uk.class.h"
+#include "table.class.h"
 #include <iostream>
-#include "log.h"
+
 
 database::database(std::string type, std::string host, int port, std::string user, std::string password, std::string dbname)
 {
@@ -24,12 +25,12 @@ database::database(std::string type, std::string host, int port, std::string use
 	 	GDA_CONNECTION_OPTIONS_NONE,
 		&error);
 
-    if (!this->dbconn)
-    {
-        g_print ("Could not open connection to database: %s\n",
-                 error && error->message ? error->message : "No detail");
-        exit (1);
-    }
+	if (!this->dbconn)
+	{
+		g_print ("Could not open connection to database: %s\n",
+			error && error->message ? error->message : "No detail");
+		exit (1);
+	}
 
 	/* create an SQL parser */
 	parser = gda_connection_create_parser (this->dbconn);
@@ -52,10 +53,9 @@ bool database::loadTables()
 	stmt = gda_sql_parser_parse_string (parser, sql, NULL, NULL);
 	data_model = gda_connection_statement_execute_select (this->dbconn, stmt, NULL, &error);
 	g_object_unref (stmt);
-    if (!data_model)
-        g_error ("Could not get tablelist: %s\n",
-                 error && error->message ? error->message : "No detail");
-	//gda_data_model_dump (data_model, stdout);
+	if (!data_model)
+		g_error ("Could not get tablelist: %s\n",
+			error && error->message ? error->message : "No detail");
 
 	gint row_id;
 	const GValue *value;
@@ -95,7 +95,7 @@ void database::loadColumns()
 	data_model = gda_connection_statement_execute_select (dbconn, stmt, NULL, &error);
 	g_object_unref (stmt);
 	if (!data_model)
-		g_error ("Could not get tablelist: %s\n",
+		g_error ("Could not get Columns: %s\n",
 			error && error->message ? error->message : "No detail");
 
 	gint row_id;
@@ -175,7 +175,6 @@ void database::loadConstraints()
 	if (!data_model)
 		g_error ("Could not get Constraints: %s\n",
 			error && error->message ? error->message : "No detail");
-	//gda_data_model_dump (data_model, stdout);
 
 	gint row_id;
 	const GValue *value;
@@ -183,8 +182,8 @@ void database::loadConstraints()
 	std::string table_name, column_name, fk_table_schema, fk_table_name, fk_column_name;
 	std::string last_fk_schema="-1", last_fk_name="-1";
 	std::string last_uk_schema="-1", last_uk_name="-1";
-	constraint_fk *fk;
-	constraint_uk *uk;
+	constraint_fk *fk=NULL;
+	constraint_uk *uk=NULL;
 	table* tablepntr;
 
 	for(row_id=0;row_id < gda_data_model_get_n_rows(data_model); row_id++)
@@ -216,8 +215,9 @@ void database::loadConstraints()
 		value = gda_data_model_get_value_at(data_model, 8, row_id, NULL);
 		fk_column_name = gda_value_stringify(value);
 
+		tablepntr = NULL;
 		tablepntr = this->getTable(table_schema, table_name);
-		if(!tablepntr)
+		if(tablepntr==NULL)
 			continue;
 
 		if(constraint_type=="PRIMARY KEY")
@@ -226,36 +226,20 @@ void database::loadConstraints()
 		}
 		else if(constraint_type=="FOREIGN KEY")
 		{
-			if(last_fk_schema!=constraint_schema || last_fk_name!=constraint_name)
-			{
-				if(last_fk_schema!="-1")
-					tablepntr->constraintlist.push_back(fk);
-				fk = new constraint_fk(constraint_schema, constraint_name);
-				last_fk_schema = constraint_schema;
-				last_fk_name = constraint_name;
-			}
-
+			fk = new constraint_fk(constraint_schema, constraint_name);
 			fk->addSource(table_schema, table_name, column_name);
 			fk->addTarget(fk_table_schema, fk_table_name, fk_column_name);
+			tablepntr->constraintlist.push_back(fk);
+
 		}
 		else if(constraint_type=="UNIQUE")
 		{
-			if(last_uk_schema!=constraint_schema || last_uk_name!=constraint_name)
-			{
-				if(last_uk_schema!="-1")
-					tablepntr->constraintlist.push_back(uk);
-				uk = new constraint_uk(constraint_schema, constraint_name);
-				last_uk_schema = constraint_schema;
-				last_uk_name = constraint_name;
-			}
+			uk = new constraint_uk(constraint_schema, constraint_name);
 			uk->addSource(table_schema, table_name, column_name);
+			tablepntr->constraintlist.push_back(uk);
 		}
 
 	}
-	if(last_fk_schema!="-1")
-		tablepntr->constraintlist.push_back(fk);
-	if(last_uk_schema!="-1")
-		tablepntr->constraintlist.push_back(uk);
 	g_object_unref (data_model);
 }
 
@@ -274,13 +258,6 @@ table* database::getTable(std::string schemaname, std::string tablename)
 
 void database::analyze()
 {
-	/*
-	Number of Tables
-	Number of Tables Without PK
-	AVG Number of Columns per Table
-	Number of FK
-	Size of Tables
-	*/
 	this->stat.num_tables = this->tablelist.size();
 	this->stat.num_columns = 0;
 	this->stat.num_fk = 0;

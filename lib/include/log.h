@@ -21,13 +21,15 @@ class Log
 {
 	private:
 		bool endl;
+		bool addendl;
 		std::string color;
 
 	public:
-		Log(const std::string &funcName, std::string color)
+		Log(const std::string &funcName, std::string color, bool endl)
 		{
 			this->color = color;
 			this->endl = false;
+			this->addendl = endl;
 			#ifdef DBANALYZE_DEBUG
 				std::cout << KBLU << funcName << ": " << KNRM;
 			#endif
@@ -51,15 +53,17 @@ class Log
 
 		~Log()
 		{
-			if(!this->endl)
+			if(!this->endl && this->addendl)
 			{
 				std::cout << std::endl;
 			}
 		}
 };
 
-#define dbg Log(__FUNCTION__,KBLU)
-#define green Log(__FUNCTION__,KGRN)
-#define red Log(__FUNCTION__,KRED)
+#define dbg Log(__FUNCTION__,KBLU, true)
+#define green Log(__FUNCTION__,KGRN, true)
+#define red Log(__FUNCTION__,KRED, true)
+#define out_fk Log(__FUNCTION__,KGRN, false)
+#define out_uk Log(__FUNCTION__,KGRN, false)
 
 #endif //DBANALYZE_LOG
