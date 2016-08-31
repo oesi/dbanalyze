@@ -7,32 +7,20 @@
 #include <libgda/libgda.h>
 #include <sql-parser/gda-sql-parser.h>
 
-
-struct statistic
-{
-	int num_tables;
-	std::vector<table*> tables_without_pk;
-	int num_columns;
-	int num_fk;
-	int num_uk;
-};
-
 class database
 {
 	public:
 		database(std::string type, std::string host, int port, std::string user, std::string password, std::string dbname);
 		~database();
-		bool loadTables();
-		void output();
-		void loadColumns();
-		void analyze();
-		void loadConstraints();
-		table* getTable(std::string schemaname, std::string tablename);
+		bool query(std::string sql);
+		std::string get(std::string columnname);
+		bool nextRow();
+		const GValue *getRecord(std::string columnname);
 
-	private:
-		std::vector<table> tablelist;
+	public:
 		GdaConnection *dbconn;
-		statistic stat;
+		GdaDataModel *data_model;
+		gint row_id;
 };
 
 #endif //DATABASECLASS

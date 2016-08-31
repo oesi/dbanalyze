@@ -1,4 +1,4 @@
-#include "database.h"
+#include "dbanalyze.h"
 #include "utils.h"
 
 #include <iostream>
@@ -56,13 +56,17 @@ int main (int argc, char *argv[])
 		SetStdinEcho(true);
 	}
 
-	database db(type, host, port, user, password, dbname);
+	dbanalyze db(type, host, port, user, password, dbname);
 	std::vector<table> tables;
 	db.loadTables();
 	db.loadColumns();
 	db.loadConstraints();
 	db.output();
-	db.analyze();
+
+	statistic stat;
+	stat.analyze(db.getTablelist());
+	stat.output();
+
 	return 0;
 }
 
