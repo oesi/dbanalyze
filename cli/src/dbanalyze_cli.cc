@@ -1,8 +1,10 @@
 #include "dbanalyze.h"
 #include "utils.h"
+#include "output_cli.class.h"
 
 #include <iostream>
 #include <boost/program_options.hpp>
+
 
 namespace po = boost::program_options;
 
@@ -56,17 +58,15 @@ int main (int argc, char *argv[])
 		SetStdinEcho(true);
 	}
 
-	dbanalyze db(type, host, port, user, password, dbname);
-	std::vector<table> tables;
-	db.loadTables();
-	db.loadColumns();
-	db.loadConstraints();
-	db.output();
+	dbanalyze dba(type, host, port, user, password, dbname);
+	dba.loadData();
+
+	output_cli out;
+	out.printData(dba.getTablelist());
 
 	statistic stat;
-	stat.analyze(db.getTablelist());
+	stat.analyze(dba.getTablelist());
 	stat.output();
 
 	return 0;
 }
-

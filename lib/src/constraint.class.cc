@@ -20,12 +20,3 @@ void constraint::addSource(std::string table_schema, std::string table_name, std
 {
 	this->source.push_back(ConstraintData(table_schema, table_name, table_column));
 }
-
-void constraint::output()
-{
-	std::cout << "⚷";
-	for(unsigned int i=0;i < this->source.size();i++)
-	{
-		std::cout << this->constraint_name;
-	}
-}

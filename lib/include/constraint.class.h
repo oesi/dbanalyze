@@ -21,10 +21,8 @@ class constraint
 		constraint(std::string constraint_schema, std::string constraint_name);
 		virtual ~constraint();
 		void addSource(std::string table_schema, std::string table_name, std::string table_column);
-		virtual void output();
 
 		std::vector<ConstraintData> source;
-	protected:
 		std::string constraint_schema;
 		std::string constraint_name;
 };

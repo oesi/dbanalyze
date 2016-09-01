@@ -12,11 +12,18 @@ dbanalyze::dbanalyze(std::string type, std::string host, int port, std::string u
 	this->db = new database(type, host, port, user, password, dbname);
 }
 
-bool dbanalyze::loadTables()
+void dbanalyze::loadData()
+{
+	this->loadTables();
+	this->loadColumns();
+	this->loadConstraints();
+}
+
+void dbanalyze::loadTables()
 {
 	this->db->query("SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema NOT IN('pg_catalog','information_schema') AND table_type='BASE TABLE'");
 
-	std::string schemaname, tablename;	
+	std::string schemaname, tablename;
 
 	while(this->db->nextRow())
 	{
@@ -138,17 +145,6 @@ table* dbanalyze::getTable(std::string schemaname, std::string tablename)
 		}
 	}
 	return NULL;
-}
-
-void dbanalyze::output()
-{
-	unsigned int i;
-	std::cout << std::endl << "== Tables ==" << std::endl;
-	for(i = 0; i < this->tablelist.size(); i++)
-	{
-		tablelist[i].output();
-	}
-	std::cout << "(" << i << " rows)" << std::endl;
 }
 
 dbanalyze::~dbanalyze()

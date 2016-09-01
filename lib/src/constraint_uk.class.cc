@@ -15,9 +15,3 @@ constraint_uk::~constraint_uk()
 {
 
 }
-
-void constraint_uk::output()
-{
-	out_uk << "⚷UK:";
-	out_uk << this->constraint_name;
-}

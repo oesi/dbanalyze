@@ -9,13 +9,3 @@ column::column(std::string columnname, std::string datatype, std::string charact
 	this->numeric_scale = numeric_scale;
 	this->is_nullable = is_nullable;
 }
-
-void column::output()
-{
-	std::cout << "\t" << this->columnname << " " << this->datatype;
-}
-
-std::string column::getColumnname()
-{
-	return this->columnname;
-}
