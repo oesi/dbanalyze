@@ -16,6 +16,7 @@ class dbanalyze
 		void loadTables();
 		void loadColumns();
 		void loadConstraints();
+		void loadTableSize();
 		
 		table* getTable(std::string schemaname, std::string tablename);
 		std::vector<table>* getTablelist(){ return &tablelist; }

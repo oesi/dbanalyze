@@ -1,15 +1,8 @@
 #include "database.class.h"
-#include "log.h"
 #include <iostream>
-
 database::database(std::string type, std::string host, int port, std::string user, std::string password, std::string dbname)
 {
 	GError *error = NULL;
-	GdaSqlParser *parser;
-	dbg << "Connecting to Type:" << type
-		<< " Host:" << host
-		<< " User:" << user
-		<< " DBname:" << dbname;
 
 	std::string connstr, authstr;
 	connstr = "DB_NAME="+dbname+";PORT="+std::to_string(port);
@@ -26,14 +19,6 @@ database::database(std::string type, std::string host, int port, std::string use
 			error && error->message ? error->message : "No detail");
 		exit (1);
 	}
-
-	/* create an SQL parser */
-	parser = gda_connection_create_parser (this->dbconn);
-	if (!parser) /* @cnc does not provide its own parser => use default one */
-		parser = gda_sql_parser_new ();
-	/* attach the parser object to the connection */
-	g_object_set_data_full (G_OBJECT (this->dbconn), "parser", parser, g_object_unref);
-
 }
 
 database::~database()
@@ -80,6 +65,12 @@ bool database::nextRow()
 std::string database::get(std::string columnname)
 {
 	return gda_value_stringify(this->getRecord(columnname));
+}
+
+double database::getNumber(std::string columnname)
+{
+	const GdaNumeric* data = gda_value_get_numeric(this->getRecord(columnname));
+	return gda_numeric_get_double(data);
 }
 
 const GValue *database::getRecord(std::string columnname)

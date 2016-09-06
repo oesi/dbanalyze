@@ -1,5 +1,4 @@
 #include "constraint.class.h"
-#include "log.h"
 
 constraint::constraint()
 {

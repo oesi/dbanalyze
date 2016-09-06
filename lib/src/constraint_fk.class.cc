@@ -1,5 +1,4 @@
 #include "constraint_fk.class.h"
-#include "log.h"
 
 constraint_fk::constraint_fk()
 {

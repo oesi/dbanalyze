@@ -1,5 +1,4 @@
 #include "constraint_uk.class.h"
-#include "log.h"
 
 constraint_uk::constraint_uk()
 {

@@ -13,14 +13,16 @@ class database
 		database(std::string type, std::string host, int port, std::string user, std::string password, std::string dbname);
 		~database();
 		bool query(std::string sql);
-		std::string get(std::string columnname);
 		bool nextRow();
+		std::string get(std::string columnname);
+		double getNumber(std::string columnname);
+
+	protected:
 		const GValue *getRecord(std::string columnname);
 
-	public:
 		GdaConnection *dbconn;
 		GdaDataModel *data_model;
-		gint row_id;
+		long row_id;
 };
 
 #endif //DATABASECLASS

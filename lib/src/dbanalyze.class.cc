@@ -1,11 +1,11 @@
 #include "dbanalyze.h"
 #include "database.class.h"
-#include "log.h"
 #include "dbanalyze.class.h"
 #include "constraint_fk.class.h"
 #include "constraint_uk.class.h"
 #include "table.class.h"
 #include <iostream>
+#include <sstream>
 
 dbanalyze::dbanalyze(std::string type, std::string host, int port, std::string user, std::string password, std::string dbname)
 {
@@ -17,6 +17,7 @@ void dbanalyze::loadData()
 	this->loadTables();
 	this->loadColumns();
 	this->loadConstraints();
+	this->loadTableSize();
 }
 
 void dbanalyze::loadTables()
@@ -133,6 +134,21 @@ void dbanalyze::loadConstraints()
 
 	}
 
+}
+
+void dbanalyze::loadTableSize()
+{
+	for(unsigned int i = 0; i < this->tablelist.size(); i++)
+	{
+		std::stringstream sql;
+		sql << "SELECT count(*)::numeric as row_count FROM "+this->tablelist[i].schemaname+"."+this->tablelist[i].tablename;
+		this->db->query(sql.str());
+
+		if(this->db->nextRow())
+		{
+			this->tablelist[i].row_count = (long)this->db->getNumber("row_count");
+		}
+	}
 }
 
 table* dbanalyze::getTable(std::string schemaname, std::string tablename)

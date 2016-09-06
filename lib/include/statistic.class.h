@@ -10,10 +10,10 @@ class statistic
 	public:
 		~statistic();
 		void analyze(std::vector<table> *tablelist);
-		void output();
 
-		int num_tables;
 		std::vector<table*> tables_without_pk;
+		std::vector<table*> empty_tables;
+		int num_tables;
 		int num_columns;
 		int num_fk;
 		int num_uk;

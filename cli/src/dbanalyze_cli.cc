@@ -66,7 +66,7 @@ int main (int argc, char *argv[])
 
 	statistic stat;
 	stat.analyze(dba.getTablelist());
-	stat.output();
+	out.printStatistic(&stat);
 
 	return 0;
 }

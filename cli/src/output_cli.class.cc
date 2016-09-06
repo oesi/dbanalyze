@@ -1,5 +1,5 @@
 #include "output_cli.class.h"
-
+#include "log.h"
 
 void output_cli::printConstraint(constraint* constr)
 {
@@ -31,7 +31,8 @@ void output_cli::printTable(table* table)
 			std::cout << " " << table->pk[i];
 		}
 	}
-	std::cout << " ) " << std::endl;
+	std::cout << " ) ";
+	std::cout << table->row_count << " Entries" << std::endl;
 
 	for(unsigned int i=0;i < table->columnlist.size();i++)
 	{
@@ -54,4 +55,22 @@ void output_cli::printData(std::vector<table> *tablelist)
 		printTable(&tablelist->at(i));
 	}
 	std::cout << "(" << i << " rows)" << std::endl;
+}
+
+void output_cli::printStatistic(statistic* stat)
+{
+	green << "Number of Tables:" << stat->num_tables;
+	green << "Number of Tables without PK:" << stat->tables_without_pk.size();
+	for(unsigned int j = 0; j < stat->tables_without_pk.size(); j++)
+	{
+		red << "\t" << stat->tables_without_pk[j]->schemaname << "." << stat->tables_without_pk[j]->tablename;
+	}
+	green << "Empty Tables:" << stat->empty_tables.size();
+	for(unsigned int j = 0; j < stat->empty_tables.size(); j++)
+	{
+		red << "\t" << stat->empty_tables[j]->schemaname << "." << stat->empty_tables[j]->tablename;
+	}
+	green << "Number of Columns: " << stat->num_columns;
+	green << "Number of FK: " << stat->num_fk;
+	green << "Number of UK: " << stat->num_uk;
 }

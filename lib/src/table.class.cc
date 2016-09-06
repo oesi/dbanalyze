@@ -1,9 +1,6 @@
 #include "table.class.h"
-#include "log.h"
 #include "constraint_fk.class.h"
 #include "constraint_uk.class.h"
-#include <iostream>
-#include <sstream>
 
 table::table(std::string schemaname, std::string tablename)
 {

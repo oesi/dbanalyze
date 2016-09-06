@@ -2,7 +2,6 @@
 #define COLUMNCLASS
 
 #include <string>
-#include <vector>
 
 class column
 {

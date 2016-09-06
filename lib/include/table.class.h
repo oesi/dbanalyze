@@ -20,6 +20,7 @@ class table
 		std::vector<column> columnlist;
 		std::vector<std::string> pk;
 		std::vector<constraint*> constraintlist;
+		long row_count;
 };
 
 #endif //TABLECLASS

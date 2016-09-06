@@ -13,6 +13,7 @@ class output_cli
 		void printTable(table* table);
 		void printColumn(column* column);
 		void printConstraint(constraint* constr);
+		void printStatistic(statistic* stat);
 };
 
 #endif //OUTPUT_CLI_CLASS

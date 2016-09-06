@@ -1,7 +1,6 @@
 #include "statistic.class.h"
 #include "constraint_fk.class.h"
 #include "constraint_uk.class.h"
-#include "log.h"
 
 void statistic::analyze(std::vector<table> *tablelist)
 {
@@ -30,20 +29,10 @@ void statistic::analyze(std::vector<table> *tablelist)
 				this->num_uk++;
 			}
 		}
-	}
-}
 
-void statistic::output()
-{
-	green << "Number of Tables:" << this->num_tables;
-	green << "Number of Tables without PK:" << this->tables_without_pk.size();
-	for(unsigned int j = 0; j < this->tables_without_pk.size(); j++)
-	{
-		red << "\t" << this->tables_without_pk[j]->schemaname << "." << this->tables_without_pk[j]->tablename;
+		if(tablelist->at(i).row_count==0)
+			this->empty_tables.push_back(&tablelist->at(i));
 	}
-	green << "Number of Columns: " << this->num_columns;
-	green << "Number of FK: " << this->num_fk;
-	green << "Number of UK: " << this->num_uk;
 }
 
 statistic::~statistic()
