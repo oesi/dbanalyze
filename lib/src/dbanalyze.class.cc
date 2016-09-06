@@ -79,13 +79,13 @@ void dbanalyze::loadConstraints()
 {
 	std::stringstream sql;
 
-	sql << "SELECT table_constraints.constraint_type, table_constraints.constraint_schema, table_constraints.constraint_name, constraint_column_usage.table_schema, ";
-	sql << " constraint_column_usage.table_name, constraint_column_usage.column_name, ";
-	sql << " ccu.table_schema as fk_table_schema, ccu.table_name as fk_table_name, ccu.column_name as fk_column_name ";
+	sql << "SELECT table_constraints.constraint_type, table_constraints.constraint_schema, table_constraints.constraint_name, key_column_usage.table_schema, ";
+	sql << " key_column_usage.table_name, key_column_usage.column_name, ";
+	sql << " kcu.table_schema as fk_table_schema, kcu.table_name as fk_table_name, kcu.column_name as fk_column_name ";
 	sql << "FROM information_schema.table_constraints ";
-	sql << "JOIN information_schema.constraint_column_usage USING(constraint_name, constraint_schema) ";
+	sql << "JOIN information_schema.key_column_usage USING(constraint_name, constraint_schema) ";
 	sql << "LEFT JOIN information_schema.referential_constraints USING(constraint_name, constraint_schema) ";
-	sql << "LEFT JOIN information_schema.constraint_column_usage ccu on(ccu.constraint_name=unique_constraint_name AND ccu.constraint_schema=unique_constraint_schema) ";
+	sql << "LEFT JOIN information_schema.key_column_usage kcu on(kcu.constraint_name=unique_constraint_name AND kcu.constraint_schema=unique_constraint_schema) ";
 	sql << "ORDER BY fk_table_schema, fk_table_name, table_schema, table_name";
 
 	this->db->query(sql.str());
