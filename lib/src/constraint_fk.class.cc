@@ -10,9 +10,9 @@ constraint_fk::constraint_fk(std::string constraint_schema, std::string constrai
 	this->constraint_name = constraint_name;
 }
 
-void constraint_fk::addTarget(std::string table_schema, std::string table_name, std::string table_column)
+void constraint_fk::addTarget(column* target)
 {
-	this->target.push_back(ConstraintData(table_schema, table_name, table_column));
+	this->target.push_back(target);
 }
 
 constraint_fk::~constraint_fk()

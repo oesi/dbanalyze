@@ -70,7 +70,7 @@ void dbanalyze::loadColumns()
 
 		if(tablepntr)
 		{
-			tablepntr->columnlist.push_back(column(column_name, datatype, character_maximum_length, numeric_precision, numeric_scale, is_nullable));
+			tablepntr->columnlist.push_back(column(tablepntr, column_name, datatype, character_maximum_length, numeric_precision, numeric_scale, is_nullable));
 		}
 	}
 }
@@ -85,8 +85,8 @@ void dbanalyze::loadConstraints()
 	sql << "FROM information_schema.table_constraints ";
 	sql << "JOIN information_schema.key_column_usage USING(constraint_name, constraint_schema) ";
 	sql << "LEFT JOIN information_schema.referential_constraints USING(constraint_name, constraint_schema) ";
-	sql << "LEFT JOIN information_schema.key_column_usage kcu on(kcu.constraint_name=unique_constraint_name AND kcu.constraint_schema=unique_constraint_schema) ";
-	sql << "ORDER BY fk_table_schema, fk_table_name, table_schema, table_name";
+	sql << "LEFT JOIN information_schema.key_column_usage kcu on(kcu.constraint_name=unique_constraint_name AND kcu.constraint_schema=unique_constraint_schema AND kcu.ordinal_position=key_column_usage.ordinal_position) ";
+	sql << "ORDER BY fk_table_schema, fk_table_name, key_column_usage.table_schema, key_column_usage.table_name";
 
 	this->db->query(sql.str());
 
@@ -121,7 +121,8 @@ void dbanalyze::loadConstraints()
 		{
 			fk = new constraint_fk(constraint_schema, constraint_name);
 			fk->addSource(table_schema, table_name, column_name);
-			fk->addTarget(fk_table_schema, fk_table_name, fk_column_name);
+			column* col = this->getColumn(fk_table_schema, fk_table_name, fk_column_name);
+			fk->addTarget(col);
 			tablepntr->constraintlist.push_back(fk);
 
 		}
@@ -158,6 +159,22 @@ table* dbanalyze::getTable(std::string schemaname, std::string tablename)
 		if(this->tablelist[i].schemaname == schemaname && this->tablelist[i].tablename==tablename)
 		{
 			return &this->tablelist[i];
+		}
+	}
+	return NULL;
+}
+
+column* dbanalyze::getColumn(std::string schemaname, std::string tablename, std::string columnname)
+{
+	table* tbl = this->getTable(schemaname, tablename);
+	if(tbl!=NULL)
+	{
+		for(unsigned int i = 0; i < tbl->columnlist.size(); i++)
+		{
+			if(tbl->columnlist[i].columnname == columnname)
+			{
+				return &tbl->columnlist[i];
+			}
 		}
 	}
 	return NULL;

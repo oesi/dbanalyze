@@ -2,6 +2,7 @@
 #define OUTPUT_CLI_CLASS
 
 #include "dbanalyze.h"
+#include "constraint_fk.class.h"
 #include <string>
 #include <vector>
 #include <iostream>

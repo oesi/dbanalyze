@@ -1,6 +1,7 @@
 #include "column.class.h"
-column::column(std::string columnname, std::string datatype, std::string character_maximum_length,std::string numeric_precision, std::string numeric_scale, std::string is_nullable)
+column::column(void* tablepntr, std::string columnname, std::string datatype, std::string character_maximum_length,std::string numeric_precision, std::string numeric_scale, std::string is_nullable)
 {
+	this->tablepntr = tablepntr;
 	this->columnname = columnname;
 	this->datatype = datatype;
 	this->character_maximum_length = character_maximum_length;
