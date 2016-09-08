@@ -4,24 +4,20 @@
 void output_cli::printConstraint(constraint* constr)
 {
 	std::cout << "⚷";
-	for(unsigned int i=0;i < constr->source.size();i++)
+	std::cout << constr->constraint_name;
+
+	constraint_fk* fk = dynamic_cast< constraint_fk* >( constr );
+
+	if(fk)
 	{
-		std::cout << constr->constraint_name;
-
-		constraint_fk* fk = dynamic_cast< constraint_fk* >( constr );
-
-		if(fk)
+		std::cout << " ( RefTo: ";
+		for(unsigned j=0;j < fk->target.size();j++)
 		{
-			std::cout << " ( RefTo: ";
-			for(unsigned j=0;j < fk->target.size();j++)
-			{
-				table *t1 = static_cast<table*>(fk->target[i]->tablepntr);
-				std::cout << t1->schemaname << "." << t1->tablename << ".";
-				std::cout << fk->target[i]->columnname << " ";
-			}
-			std::cout << ")";
+			table *t1 = static_cast<table*>(fk->target[j]->tablepntr);
+			std::cout << t1->schemaname << "." << t1->tablename << ".";
+			std::cout << fk->target[j]->columnname << " ";
 		}
-
+		std::cout << ")";
 	}
 }
 

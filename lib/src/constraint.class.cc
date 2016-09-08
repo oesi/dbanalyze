@@ -15,7 +15,7 @@ constraint::~constraint()
 
 }
 
-void constraint::addSource(std::string table_schema, std::string table_name, std::string table_column)
+void constraint::addSource(void* columnpntr)
 {
-	this->source.push_back(ConstraintData(table_schema, table_name, table_column));
+	this->source = columnpntr;
 }

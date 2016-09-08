@@ -2,6 +2,7 @@
 #define STATISTICCLASS
 
 #include "table.class.h"
+#include "constraint_fk.class.h"
 #include <string>
 #include <vector>
 
@@ -17,6 +18,7 @@ class statistic
 		int num_columns;
 		int num_fk;
 		int num_uk;
+		std::vector<constraint_fk*> fk_datatype_missmatch;
 };
 
 #endif //STATISTICCLASS

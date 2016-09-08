@@ -120,7 +120,8 @@ void dbanalyze::loadConstraints()
 		else if(constraint_type=="FOREIGN KEY")
 		{
 			fk = new constraint_fk(constraint_schema, constraint_name);
-			fk->addSource(table_schema, table_name, column_name);
+			column* src_col = this->getColumn(table_schema, table_name, column_name);
+			fk->addSource(src_col);
 			column* col = this->getColumn(fk_table_schema, fk_table_name, fk_column_name);
 			fk->addTarget(col);
 			tablepntr->constraintlist.push_back(fk);
@@ -129,7 +130,8 @@ void dbanalyze::loadConstraints()
 		else if(constraint_type=="UNIQUE")
 		{
 			uk = new constraint_uk(constraint_schema, constraint_name);
-			uk->addSource(table_schema, table_name, column_name);
+			column* src_col = this->getColumn(table_schema, table_name, column_name);
+			uk->addSource(src_col);
 			tablepntr->constraintlist.push_back(uk);
 		}
 
