@@ -1,9 +1,11 @@
 #include "output_cli.class.h"
 #include "log.h"
 
+#define KEYSYMBOL "⚷"
+
 void output_cli::printConstraint(constraint* constr)
 {
-	std::cout << "⚷";
+	std::cout << KEYSYMBOL;
 	std::cout << constr->constraint_name;
 
 	constraint_fk* fk = dynamic_cast< constraint_fk* >( constr );
@@ -11,12 +13,9 @@ void output_cli::printConstraint(constraint* constr)
 	if(fk)
 	{
 		std::cout << " ( RefTo: ";
-		for(unsigned j=0;j < fk->target.size();j++)
-		{
-			table *t1 = static_cast<table*>(fk->target[j]->tablepntr);
-			std::cout << t1->schemaname << "." << t1->tablename << ".";
-			std::cout << fk->target[j]->columnname << " ";
-		}
+		table *t1 = static_cast<table*>(fk->target->tablepntr);
+		std::cout << t1->schemaname << "." << t1->tablename << ".";
+		std::cout << fk->target->columnname << " ";
 		std::cout << ")";
 	}
 }
@@ -70,7 +69,6 @@ void output_cli::printData(std::vector<table> *tablelist)
 
 void output_cli::printStatistic(statistic* stat)
 {
-	green << "Number of Tables:" << stat->num_tables;
 	green << "Number of Tables without PK:" << stat->tables_without_pk.size();
 	for(unsigned int j = 0; j < stat->tables_without_pk.size(); j++)
 	{
@@ -81,7 +79,18 @@ void output_cli::printStatistic(statistic* stat)
 	{
 		red << "\t" << stat->empty_tables[j]->schemaname << "." << stat->empty_tables[j]->tablename;
 	}
+
+	green << "Number of FK with datatype missmatch:" << stat->fk_datatype_missmatch.size();
+	for(unsigned int j = 0; j < stat->fk_datatype_missmatch.size(); j++)
+	{
+		constraint_fk* fk = dynamic_cast< constraint_fk* >( stat->fk_datatype_missmatch[j] );
+		column *sourcecol = static_cast<column*>(fk->source);
+
+		red << "\t" << KEYSYMBOL << stat->fk_datatype_missmatch[j]->constraint_schema << "." << stat->fk_datatype_missmatch[j]->constraint_name << "." << sourcecol->columnname;
+	}
+	green << "Number of Tables:" << stat->num_tables;
 	green << "Number of Columns: " << stat->num_columns;
 	green << "Number of FK: " << stat->num_fk;
 	green << "Number of UK: " << stat->num_uk;
+
 }

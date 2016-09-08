@@ -10,7 +10,7 @@ class constraint_fk: public constraint
 		~constraint_fk();
 		void addTarget(column* target);
 
-		std::vector<column*> target;
+		column* target;
 };
 
 #endif //CONSTRAINT_FK_CLASS

@@ -20,21 +20,22 @@ void statistic::analyze(std::vector<table> *tablelist)
 
 		for(unsigned int j = 0; j < tablelist->at(i).constraintlist.size(); j++)
 		{
-			constraint_fk* is_a_fk = dynamic_cast< constraint_fk* >( tablelist->at(i).constraintlist[j] );
-			constraint_uk* is_a_uk = dynamic_cast< constraint_uk* >( tablelist->at(i).constraintlist[j] );
-			if(is_a_fk)
+			constraint_fk* fk = dynamic_cast< constraint_fk* >( tablelist->at(i).constraintlist[j] );
+			constraint_uk* uk = dynamic_cast< constraint_uk* >( tablelist->at(i).constraintlist[j] );
+			if(fk)
 			{
 				// count foreign keys
 				this->num_fk++;
 
 				// check if foreign key datatype match target datatype
-				/*
-				if(tablelist->at(i).datatype !== tablelist->at(i).constraintlist[j]->target[0]->datatype)
+				column *sourcecol = static_cast<column*>(fk->source);
+
+				if(sourcecol->datatype != fk->target->datatype)
 				{
 					this->fk_datatype_missmatch.push_back(tablelist->at(i).constraintlist[j]);
-				}*/
+				}
 			}
-			else if(is_a_uk)
+			else if(uk)
 			{
 				// count unique constraints
 				this->num_uk++;

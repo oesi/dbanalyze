@@ -12,7 +12,7 @@ constraint_fk::constraint_fk(std::string constraint_schema, std::string constrai
 
 void constraint_fk::addTarget(column* target)
 {
-	this->target.push_back(target);
+	this->target = target;
 }
 
 constraint_fk::~constraint_fk()

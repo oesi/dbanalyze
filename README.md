@@ -9,14 +9,13 @@ Tool to analyze Databases
    * Show Tables without Primary Keys
    * Show Tables without Entries
    * Lists the number of Unique Constraints
-   * List of Foreign Keys
+   * Lists the number of Foreign Keys
+   * Datatype missmatch between FK->PK
 
 ## Planned Checks
 
    * List of Indices
-   * Datatype match FK->PK
    * tables without references
-   * Unique Constraints
    * Comments on Tables
    * column naming conventions
 
@@ -26,8 +25,10 @@ Tool to analyze Databases
 apt-get install libgda-5.0-dev
 apt-get install libgda-5.0-postgres
 ```
-
 Start ./car.sh to compile an run the application
+
+## Run Application
+./cli/bin/dbanalyze_cli --help
 
 ## Additional Links
 
