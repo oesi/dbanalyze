@@ -14,6 +14,7 @@ lib_src="`ls -d -1 ./lib/src/**.cc`"
 g++ -shared $lib_src \
 	-std=gnu++11 `pkg-config --cflags --libs libgda-5.0` \
 	-fPIC \
+	-Wall \
 	-I ./lib/include \
 	-o ./lib/bin/libdatabase.so &>> compilerlog
 
@@ -27,6 +28,7 @@ cli_src="`ls -d -1 ./cli/src/**.cc`"
 
 # compile commandline interface
 g++ $cli_src -std=gnu++11 `pkg-config --cflags --libs libgda-5.0` \
+	-Wall \
 	-L ./lib/bin \
 	-I ./cli/include \
 	-I ./lib/include \

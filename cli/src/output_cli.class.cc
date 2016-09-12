@@ -1,5 +1,5 @@
 #include "output_cli.class.h"
-#include "log.h"
+#include "formatter.h"
 
 #define KEYSYMBOL "⚷"
 
@@ -69,28 +69,34 @@ void output_cli::printData(std::vector<table> *tablelist)
 
 void output_cli::printStatistic(statistic* stat)
 {
-	green << "Number of Tables without PK:" << stat->tables_without_pk.size();
+
+	green << "Tables without PK:" << stat->tables_without_pk.size();
 	for(unsigned int j = 0; j < stat->tables_without_pk.size(); j++)
 	{
-		red << "\t" << stat->tables_without_pk[j]->schemaname << "." << stat->tables_without_pk[j]->tablename;
+		red << "\t" << stat->tables_without_pk[j]->schemaname + "." + stat->tables_without_pk[j]->tablename;
 	}
 	green << "Empty Tables:" << stat->empty_tables.size();
 	for(unsigned int j = 0; j < stat->empty_tables.size(); j++)
 	{
-		red << "\t" << stat->empty_tables[j]->schemaname << "." << stat->empty_tables[j]->tablename;
+		red << "\t" << stat->empty_tables[j]->schemaname + "." + stat->empty_tables[j]->tablename;
 	}
 
-	green << "Number of FK with datatype missmatch:" << stat->fk_datatype_missmatch.size();
+	green << "FK datatype missmatch:" << stat->fk_datatype_missmatch.size();
 	for(unsigned int j = 0; j < stat->fk_datatype_missmatch.size(); j++)
 	{
 		constraint_fk* fk = dynamic_cast< constraint_fk* >( stat->fk_datatype_missmatch[j] );
 		column *sourcecol = static_cast<column*>(fk->source);
 
-		red << "\t" << KEYSYMBOL << stat->fk_datatype_missmatch[j]->constraint_schema << "." << stat->fk_datatype_missmatch[j]->constraint_name << "." << sourcecol->columnname;
+		red << "\t" << KEYSYMBOL + stat->fk_datatype_missmatch[j]->constraint_schema + "." + stat->fk_datatype_missmatch[j]->constraint_name + "." + sourcecol->columnname;
 	}
+
 	green << "Number of Tables:" << stat->num_tables;
-	green << "Number of Columns: " << stat->num_columns;
+ 	green << "Number of Columns: " << stat->num_columns;
 	green << "Number of FK: " << stat->num_fk;
 	green << "Number of UK: " << stat->num_uk;
+
+	th << "Statistic" << "" << std::endl;
+	tf << "" << "" << std::endl;
+	tr << "Total Score" << "0" << std::endl;
 
 }

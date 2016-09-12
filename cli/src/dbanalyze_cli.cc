@@ -1,7 +1,9 @@
 #include "dbanalyze.h"
 #include "utils.h"
 #include "output_cli.class.h"
+#include "formatter.h"
 
+#include <vector>
 #include <iostream>
 #include <boost/program_options.hpp>
 
@@ -56,6 +58,7 @@ int main (int argc, char *argv[])
 		SetStdinEcho(false);
 		std::cin >> password;
 		SetStdinEcho(true);
+		std::cout << std::endl;
 	}
 
 	dbanalyze dba(type, host, port, user, password, dbname);
