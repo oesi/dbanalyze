@@ -3,10 +3,11 @@
 #include "constraint_uk.class.h"
 #include "column.class.h"
 
-table::table(std::string schemaname, std::string tablename)
+table::table(std::string schemaname, std::string tablename, std::string comment)
 {
 	this->schemaname = schemaname;
 	this->tablename = tablename;
+	this->comment = comment;
 }
 
 std::vector<constraint*> table::getConstraints(std::string schema, std::string table, std::string column_name)

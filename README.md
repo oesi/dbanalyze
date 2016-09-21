@@ -30,6 +30,11 @@ Start ./car.sh to compile an run the application
 ## Run Application
 ./cli/bin/dbanalyze_cli --help
 
+source export.sh
+./cli/bin/dbanalyze_cli -t MySQL -d dbanalyze -u root -h localhost -p 3306
+./cli/bin/dbanalyze_cli -p 5433 -h localhost -d devfhcomplete3 -u oesi -t PostgreSQL
+./cli/bin/dbanalyze_cli -t sqlite -d ./db/dbanalyze.sqlite
+
 ## Additional Links
 
 GNOME Data Access

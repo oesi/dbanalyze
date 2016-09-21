@@ -19,7 +19,7 @@ int main (int argc, char *argv[])
 		("host,h", po::value<std::string>(), "Host")
 		("user,u", po::value<std::string>(), "User")
 		("password,w", po::value<std::string>(), "Password")
-		("type,t", po::value<std::string>(), "Type - PostgreSQL")
+		("type,t", po::value<std::string>(), "Type - PostgreSQL, MySQL, SQLite")
 		("dbname,d", po::value<std::string>(), "Database Name")
 	;
 
@@ -52,7 +52,7 @@ int main (int argc, char *argv[])
 
 	if (vm.count("password"))
 		password = vm["password"].as<std::string>();
-	else
+	else if(type!="SQLite")
 	{
 		std::cout << "Password:";
 		SetStdinEcho(false);
@@ -61,6 +61,13 @@ int main (int argc, char *argv[])
 		std::cout << std::endl;
 	}
 
+	if(type!="PostgreSQL" && type!="MySQL" && type!="SQLite")
+	{
+		std::cerr << "Unknown type:" << type << std::endl << desc << std::endl;
+		return 1;
+	}
+
+	std::cout << "Analyzing data ..." << std::endl;
 	dbanalyze dba(type, host, port, user, password, dbname);
 	dba.loadData();
 

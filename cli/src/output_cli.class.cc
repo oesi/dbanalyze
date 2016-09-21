@@ -7,15 +7,20 @@ void output_cli::printConstraint(constraint* constr)
 {
 	std::cout << KEYSYMBOL;
 	std::cout << constr->constraint_name;
-
 	constraint_fk* fk = dynamic_cast< constraint_fk* >( constr );
-
 	if(fk)
 	{
-		std::cout << " ( RefTo: ";
-		table *t1 = static_cast<table*>(fk->target->tablepntr);
-		std::cout << t1->schemaname << "." << t1->tablename << ".";
-		std::cout << fk->target->columnname << " ";
+		if(fk->target != NULL)
+		{
+			table *t1 = static_cast<table*>(fk->target->tablepntr);
+			std::cout << t1->schemaname << "." << t1->tablename << ".";
+			std::cout << fk->target->columnname << " ";
+
+		}
+		else
+		{
+			std::cout << "missing??";
+		}
 		std::cout << ")";
 	}
 }
@@ -69,7 +74,6 @@ void output_cli::printData(std::vector<table> *tablelist)
 
 void output_cli::printStatistic(statistic* stat)
 {
-
 	green << "Tables without PK:" << stat->tables_without_pk.size();
 	for(unsigned int j = 0; j < stat->tables_without_pk.size(); j++)
 	{

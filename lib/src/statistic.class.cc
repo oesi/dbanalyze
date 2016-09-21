@@ -29,10 +29,12 @@ void statistic::analyze(std::vector<table> *tablelist)
 
 				// check if foreign key datatype match target datatype
 				column *sourcecol = static_cast<column*>(fk->source);
-
-				if(sourcecol->datatype != fk->target->datatype)
+				if(fk->target!=NULL)
 				{
-					this->fk_datatype_missmatch.push_back(tablelist->at(i).constraintlist[j]);
+					if(sourcecol->datatype != fk->target->datatype)
+					{
+						this->fk_datatype_missmatch.push_back(tablelist->at(i).constraintlist[j]);
+					}
 				}
 			}
 			else if(uk)

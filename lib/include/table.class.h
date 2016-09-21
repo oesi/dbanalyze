@@ -12,11 +12,12 @@
 class table
 {
 	public:
-		table(std::string schemaname, std::string tablename);
+		table(std::string schemaname, std::string tablename, std::string comment);
 		std::vector<constraint*> getConstraints(std::string schema,std::string table,std::string column);
 
 		std::string tablename;
 		std::string schemaname;
+		std::string comment;
 		std::vector<column> columnlist;
 		std::vector<std::string> pk;
 		std::vector<constraint*> constraintlist;

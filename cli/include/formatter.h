@@ -46,7 +46,7 @@ class formatter
 
 struct TableFormat
 {
-	int width;
+	unsigned int width;
 	char fill;
 	std::string color;
 	std::string colorend;

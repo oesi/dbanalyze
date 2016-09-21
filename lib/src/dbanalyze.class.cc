@@ -22,56 +22,42 @@ void dbanalyze::loadData()
 
 void dbanalyze::loadTables()
 {
-	this->db->query("SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema NOT IN('pg_catalog','information_schema') AND table_type='BASE TABLE'");
+	this->db->loadTables();
 
-	std::string schemaname, tablename;
+	std::string table_namespace, table_name, table_comment;
 
 	while(this->db->nextRow())
 	{
-		schemaname = this->db->get("table_schema");
-		tablename = this->db->get("table_name");
-		this->tablelist.push_back(table(schemaname,tablename));
+		table_namespace = this->db->get("table_schema");
+		table_name = this->db->get("table_name");
+		table_comment = this->db->get("table_comments");
+
+		this->tablelist.push_back(table(table_namespace, table_name, table_comment));
 	}
 }
 
 void dbanalyze::loadColumns()
 {
-	std::stringstream sql;
-	sql << "SELECT column_name, data_type, character_maximum_length,";
-	sql << "numeric_precision, numeric_scale,is_nullable, table_schema, table_name ";
-	sql << " FROM information_schema.columns WHERE table_schema not in('pg_catalog','information_schema') ";
-	sql << " AND EXISTS(SELECT 1 FROM information_schema.tables WHERE table_name=columns.table_name AND table_schema=columns.table_schema AND table_type='BASE TABLE') ";
-	sql << " ORDER BY table_schema, table_name";
-
-	this->db->query(sql.str());
-
 	std::string column_name, datatype, character_maximum_length, numeric_precision;
 	std::string numeric_scale, is_nullable, table_schema, table_name;
 	table* tablepntr;
 	std::string last_table_schema, last_table_name;
+	this->db->loadColumns();
 
 	while(this->db->nextRow())
 	{
+		table_schema = this->db->get("table_schema");
+		table_name = this->db->get("table_name");
 		column_name = this->db->get("column_name");
 		datatype = this->db->get("data_type");
-		character_maximum_length = this->db->get("character_maximum_length");
 		numeric_precision = this->db->get("numeric_precision");
 		numeric_scale = this->db->get("numeric_scale");
-		is_nullable = this->db->get("is_nullable");
+		is_nullable = this->db->get("nullable");
 		table_schema = this->db->get("table_schema");
 		table_name = this->db->get("table_name");
 
-		if(last_table_schema!=table_schema || last_table_name!=table_name)
-		{
-			tablepntr = this->getTable(table_schema, table_name);
-			last_table_schema = table_schema;
-			last_table_name = table_name;
-		}
-
-		if(tablepntr)
-		{
-			tablepntr->columnlist.push_back(column(tablepntr, column_name, datatype, character_maximum_length, numeric_precision, numeric_scale, is_nullable));
-		}
+		tablepntr = getTable(table_schema, table_name);
+		tablepntr->columnlist.push_back(column(tablepntr, column_name, datatype, character_maximum_length, numeric_precision, numeric_scale, is_nullable));
 	}
 }
 
