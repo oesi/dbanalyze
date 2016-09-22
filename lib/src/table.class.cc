@@ -8,6 +8,7 @@ table::table(std::string schemaname, std::string tablename, std::string comment)
 	this->schemaname = schemaname;
 	this->tablename = tablename;
 	this->comment = comment;
+	this->row_count = 0;
 }
 
 std::vector<constraint*> table::getConstraints(std::string schema, std::string table, std::string column_name)

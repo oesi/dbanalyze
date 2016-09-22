@@ -57,13 +57,76 @@ void database::loadColumns()
 	std::string query;
 
 	if(this->type=="PostgreSQL")
-		query = "SELECT * FROM _columns WHERE table_schema NOT IN('pg_catalog','information_schema')";
+		query = "SELECT _columns.* FROM _columns JOIN _tables USING(table_catalog, table_schema, table_name) WHERE table_type='BASE TABLE' AND table_schema NOT IN('pg_catalog','information_schema')";
 	else if(this->type=="MySQL")
-		query = "SELECT * FROM _columns WHERE table_schema ='"+this->dbname+"'";
+		query = "SELECT _columns.* FROM _columns JOIN _tables USING(table_catalog, table_schema, table_name) WHERE table_type='BASE TABLE' AND table_schema ='"+this->dbname+"'";
 	else
-		query = "SELECT * FROM _columns";
+		query = "SELECT _columns.* FROM _columns JOIN _tables USING(table_catalog, table_schema, table_name) WHERE table_type='BASE TABLE'";
 
 	this->queryMeta(query);
+}
+
+void database::loadConstraints()
+{
+	std::string query;
+	this->row_id=-1;
+
+	if(this->type=="PostgreSQL")
+	{
+		query = "SELECT \
+					_table_constraints.*, rc.*, kc2.column_name as ref_column_name, kc1.column_name as column_name \
+				FROM \
+					_table_constraints \
+					LEFT JOIN _key_column_usage kc1 USING(table_catalog, table_schema, table_name, constraint_name) \
+					LEFT JOIN _referential_constraints rc USING(table_catalog, table_schema, table_name, constraint_name) \
+					LEFT JOIN _key_column_usage kc2 ON (rc.ref_table_catalog=kc2.table_catalog AND rc.ref_table_schema=kc2.table_schema AND rc.ref_table_name=kc2.table_name AND rc.ref_constraint_name=kc2.constraint_name) \
+					WHERE _table_constraints.table_schema NOT IN('pg_catalog','information_schema') AND (kc1.ordinal_position is null OR kc2.ordinal_position is null OR kc1.ordinal_position = kc2.ordinal_position)";
+	}
+	else if(this->type=="MySQL")
+	{
+		query = "SELECT \
+					_table_constraints.*, rc.*, kc2.column_name as ref_column_name, kc1.column_name as column_name \
+				FROM \
+					_table_constraints \
+					LEFT JOIN _key_column_usage kc1 USING(table_catalog, table_schema, table_name, constraint_name) \
+					LEFT JOIN _referential_constraints rc USING(table_catalog, table_schema, table_name, constraint_name) \
+					LEFT JOIN _key_column_usage kc2 ON (rc.ref_table_catalog=kc2.table_catalog AND rc.ref_table_schema=kc2.table_schema AND rc.ref_table_name=kc2.table_name AND rc.ref_constraint_name=kc2.constraint_name) \
+					WHERE (kc1.ordinal_position is null OR kc2.ordinal_position is null OR kc1.ordinal_position = kc2.ordinal_position) \
+					AND _table_constraints.table_schema ='"+this->dbname+"'";
+	}
+	else
+	{
+		query = "SELECT \
+					_table_constraints.*, rc.*, kc2.column_name as ref_column_name, kc1.column_name as column_name \
+				FROM \
+					_table_constraints \
+					LEFT JOIN _key_column_usage kc1 USING(table_catalog, table_schema, table_name, constraint_name) \
+					LEFT JOIN _referential_constraints rc USING(table_catalog, table_schema, table_name, constraint_name) \
+					LEFT JOIN _key_column_usage kc2 ON (rc.ref_table_catalog=kc2.table_catalog AND rc.ref_table_schema=kc2.table_schema AND rc.ref_table_name=kc2.table_name AND rc.ref_constraint_name=kc2.constraint_name) \
+					WHERE (kc1.ordinal_position is null OR kc2.ordinal_position is null OR kc1.ordinal_position = kc2.ordinal_position)";
+	}
+
+	this->queryMeta(query);
+}
+
+void database::getTableSize(std::string schemaname, std::string tablename)
+{
+	std::string query;
+	this->row_id=-1;
+
+	if(this->type=="PostgreSQL")
+	{
+		query = "SELECT count(*)::numeric as row_count FROM "+schemaname+"."+tablename;
+	}
+	else if(this->type=="MySQL")
+	{
+			query = "SELECT count(*) as row_count FROM "+this->dbname+"."+tablename;
+	}
+	else
+	{
+		query = "SELECT CAST(count(*) as double) as row_count FROM "+schemaname+"."+tablename;
+	}
+	this->query(query);
 }
 
 database::~database()
@@ -140,8 +203,18 @@ std::string database::get(std::string columnname)
 
 double database::getNumber(std::string columnname)
 {
-	const GdaNumeric* data = gda_value_get_numeric(this->getRecord(columnname));
-	return gda_numeric_get_double(data);
+	const GValue* value;
+	value = this->getRecord(columnname);
+
+	if(!gda_value_isa(value, GDA_TYPE_NUMERIC))
+	{
+		return std::stod(gda_value_stringify(value));
+	}
+	else
+	{
+		const GdaNumeric* data = gda_value_get_numeric(value);
+		return gda_numeric_get_double(data);
+	}
 }
 
 const GValue *database::getRecord(std::string columnname)

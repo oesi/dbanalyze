@@ -50,6 +50,12 @@ int main (int argc, char *argv[])
 	if (vm.count("type"))
 		type = vm["type"].as<std::string>();
 
+	if(type!="PostgreSQL" && type!="MySQL" && type!="SQLite")
+	{
+		std::cerr << "Unknown type:" << type << std::endl << desc << std::endl;
+		return 1;
+	}
+
 	if (vm.count("password"))
 		password = vm["password"].as<std::string>();
 	else if(type!="SQLite")
@@ -59,12 +65,6 @@ int main (int argc, char *argv[])
 		std::cin >> password;
 		SetStdinEcho(true);
 		std::cout << std::endl;
-	}
-
-	if(type!="PostgreSQL" && type!="MySQL" && type!="SQLite")
-	{
-		std::cerr << "Unknown type:" << type << std::endl << desc << std::endl;
-		return 1;
 	}
 
 	std::cout << "Analyzing data ..." << std::endl;

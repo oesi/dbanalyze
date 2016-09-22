@@ -6,7 +6,7 @@
 void output_cli::printConstraint(constraint* constr)
 {
 	std::cout << KEYSYMBOL;
-	std::cout << constr->constraint_name;
+	std::cout << constr->constraint_name << "(";
 	constraint_fk* fk = dynamic_cast< constraint_fk* >( constr );
 	if(fk)
 	{

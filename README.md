@@ -2,6 +2,11 @@
 
 Tool to analyze Databases
 
+Supported Databases
+   * PostgeSQL
+   * SQLite
+   * MySQL
+
 ## Features
    * Lists the number of Tables
    * Lists the number of Columns
@@ -12,12 +17,13 @@ Tool to analyze Databases
    * Lists the number of Foreign Keys
    * Datatype missmatch between FK->PK
 
-## Planned Checks
+## Planned
 
    * List of Indices
    * tables without references
    * Comments on Tables
    * column naming conventions
+   * Support for MSSQL, MSAccess
 
 ## Install
 
@@ -31,9 +37,9 @@ Start ./car.sh to compile an run the application
 ./cli/bin/dbanalyze_cli --help
 
 source export.sh
-./cli/bin/dbanalyze_cli -t MySQL -d dbanalyze -u root -h localhost -p 3306
-./cli/bin/dbanalyze_cli -p 5433 -h localhost -d devfhcomplete3 -u oesi -t PostgreSQL
-./cli/bin/dbanalyze_cli -t sqlite -d ./db/dbanalyze.sqlite
+./cli/bin/dbanalyze_cli -t MySQL -h localhost -d dbanalyze -u username -p 3306
+./cli/bin/dbanalyze_cli -t PostgreSQL -h localhost -d dbanalyze -u username -p 5432
+./cli/bin/dbanalyze_cli -t SQLite -d ./db/dbanalyze.sqlite
 
 ## Additional Links
 

@@ -19,6 +19,8 @@ class database
 		double getNumber(std::string columnname);
 		void loadTables();
 		void loadColumns();
+		void loadConstraints();
+		void getTableSize(std::string schemaname, std::string tablename);
 
 	protected:
 		const GValue *getRecord(std::string columnname);
