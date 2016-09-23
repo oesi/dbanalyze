@@ -8,15 +8,15 @@ database::database(std::string type, std::string host, int port, std::string use
 	this->dbname = dbname;
 	this->type = type;
 
-	if(type=="sqlite")
+	/*if(type=="sqlite")
 	{
 		connstr = "DB_DIR=.;DB_NAME="+dbname;
 	}
 	else
-	{
+	{*/
 		connstr = "DB_NAME="+dbname+";PORT="+std::to_string(port);
 		authstr = "USERNAME="+user+";PASSWORD="+password;
-	}
+	//}
 
 	gda_init ();
 	this->dbconn = gda_connection_open_from_string (type.c_str(), connstr.c_str(), authstr.c_str(),

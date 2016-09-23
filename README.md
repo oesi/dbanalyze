@@ -6,6 +6,7 @@ Supported Databases
    * PostgeSQL
    * SQLite
    * MySQL
+   * MSAccess
 
 ## Features
    * Lists the number of Tables
@@ -23,14 +24,30 @@ Supported Databases
    * tables without references
    * Comments on Tables
    * column naming conventions
-   * Support for MSSQL, MSAccess
+   * Support for MSSQL
 
 ## Install
 
 ```
 apt-get install libgda-5.0-dev
+# PostgreSQL Support
 apt-get install libgda-5.0-postgres
+# MySQL Support
+apt-get install libgda-5.0-mysql
+# MSAccess Support
+# maybe apt-get install mdbtools-dev
+# if libgda-5.0-mdb is not in the repo you can download it and copy
+# it to /usr/lib/libgda-5.0/providers
+apt-get install libgda-5.0-mdb
+
+# Commandline tools
+apt-get install libgda-5.0-bin
 ```
+# Commandline List Supported Databases
+```
+gda-sql-5.0 -L
+```
+
 Start ./car.sh to compile an run the application
 
 ## Run Application
