@@ -8,15 +8,8 @@ database::database(std::string type, std::string host, int port, std::string use
 	this->dbname = dbname;
 	this->type = type;
 
-	/*if(type=="sqlite")
-	{
-		connstr = "DB_DIR=.;DB_NAME="+dbname;
-	}
-	else
-	{*/
-		connstr = "DB_NAME="+dbname+";PORT="+std::to_string(port);
-		authstr = "USERNAME="+user+";PASSWORD="+password;
-	//}
+	connstr = "DB_NAME="+dbname+";PORT="+std::to_string(port);
+	authstr = "USERNAME="+user+";PASSWORD="+password;
 
 	gda_init ();
 	this->dbconn = gda_connection_open_from_string (type.c_str(), connstr.c_str(), authstr.c_str(),
@@ -38,7 +31,6 @@ void database::loadTables()
 	std::string query;
 
 	gda_connection_update_meta_store(this->dbconn, NULL, &error);
-	//this->data_model = gda_connection_get_meta_store_data (this->dbconn, GDA_CONNECTION_META_TABLES, &error, 1);
 
 	if(this->type=="PostgreSQL")
 		query = "SELECT * FROM _tables WHERE table_type='BASE TABLE' AND table_schema not in('information_schema','pg_catalog')";
@@ -104,6 +96,7 @@ void database::loadConstraints()
 					LEFT JOIN _referential_constraints rc USING(table_catalog, table_schema, table_name, constraint_name) \
 					LEFT JOIN _key_column_usage kc2 ON (rc.ref_table_catalog=kc2.table_catalog AND rc.ref_table_schema=kc2.table_schema AND rc.ref_table_name=kc2.table_name AND rc.ref_constraint_name=kc2.constraint_name) \
 					WHERE (kc1.ordinal_position is null OR kc2.ordinal_position is null OR kc1.ordinal_position = kc2.ordinal_position)";
+
 	}
 
 	this->queryMeta(query);
