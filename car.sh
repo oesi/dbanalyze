@@ -39,6 +39,7 @@ g++ $cli_src -std=gnu++11 `pkg-config --cflags --libs libgda-5.0` \
 # Save Return Value
 ret_cli=$?
 
+lines="`cat compilerlog | wc -l`"
 # Start program or display error messages
 if [[ ( $ret_cli -eq 0 ) && ( $ret_lib -eq 0 ) ]]; then
 	if [[ $1 == 'norun' ]]; then
@@ -52,8 +53,12 @@ if [[ ( $ret_cli -eq 0 ) && ( $ret_lib -eq 0 ) ]]; then
 	else
 		./cli/bin/dbanalyze_cli -h localhost -p 5433 -u dbanalyze -d analyzetest -t PostgreSQL -w dbanalyze
 	fi
+
+	if [[ $lines -gt 1 ]]; then
+		echo '========== Warnings =========';
+		cat compilerlog
+	fi
 else
-	lines="`cat compilerlog | wc -l`"
 	echo '========== Compilation Failed =========';
 	if [[ $lines -gt 20 ]]; then
 		less compilerlog
