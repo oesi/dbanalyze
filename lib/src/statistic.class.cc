@@ -48,6 +48,26 @@ void statistic::analyze(std::vector<table> *tablelist)
 		if(tablelist->at(i).row_count==0)
 			this->empty_tables.push_back(&tablelist->at(i));
 	}
+
+	this->calculateScore();
+}
+
+void statistic::calculateScore()
+{
+	this->score=0;
+	this->maximum_score=0;
+
+	// positive
+	this->score += this->num_tables * STATISTIC_TABLE_SCORE_FACTOR;
+	this->score += this->num_columns * STATISTIC_COLUMN_SCORE_FACTOR;
+	this->score += this->num_fk * STATISTIC_FK_SCORE_FACTOR;
+	this->score += this->num_uk * STATISTIC_UK_SCORE_FACTOR;
+	this->maximum_score = this->score;
+
+	// negative
+	this->score += this->tables_without_pk.size() * STATISTIC_TABLE_NO_PK_SCORE_FACTOR;
+	this->score += this->fk_datatype_missmatch.size() * STATISTIC_FK_MISSMATCH_SCORE_FACTOR;
+	this->score += this->empty_tables.size() * STATISTIC_EMPTY_TABLES_SCORE_FACTOR;
 }
 
 statistic::~statistic()

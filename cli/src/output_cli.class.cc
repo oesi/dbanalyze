@@ -99,8 +99,12 @@ void output_cli::printStatistic(statistic* stat)
 	green << "Number of FK: " << stat->num_fk;
 	green << "Number of UK: " << stat->num_uk;
 
-	th << "Statistic" << "" << std::endl;
+	std::cout << std::endl;
+
+	th << "Score" << "" << std::endl;
 	tf << "" << "" << std::endl;
-	tr << "Total Score" << "0" << std::endl;
+	tr << "Maximum Score" << stat->maximum_score << std::endl;
+	tr << "Score" << stat->score << std::endl;
+	tr << "Percent" << 100/stat->maximum_score*stat->score << std::endl;
 
 }
