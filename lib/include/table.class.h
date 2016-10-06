@@ -13,7 +13,7 @@ class table
 {
 	public:
 		table(std::string schemaname, std::string tablename, std::string comment);
-		std::vector<constraint*> getConstraints(std::string schema,std::string table,std::string column);
+		std::vector<constraint*> getConstraints(std::string column);
 
 		std::string tablename;
 		std::string schemaname;

@@ -49,7 +49,7 @@ void database::loadColumns()
 	std::string query;
 
 	if(this->type=="PostgreSQL")
-		query = "SELECT _columns.* FROM _columns JOIN _tables USING(table_catalog, table_schema, table_name) WHERE table_type='BASE TABLE' AND table_schema NOT IN('pg_catalog','information_schema')";
+		query = "SELECT REPLACE(data_type, 'pg_catalog.','') as data_type, _columns.* FROM _columns JOIN _tables USING(table_catalog, table_schema, table_name) WHERE table_type='BASE TABLE' AND table_schema NOT IN('pg_catalog','information_schema')";
 	else if(this->type=="MySQL")
 		query = "SELECT _columns.* FROM _columns JOIN _tables USING(table_catalog, table_schema, table_name) WHERE table_type='BASE TABLE' AND table_schema ='"+this->dbname+"'";
 	else

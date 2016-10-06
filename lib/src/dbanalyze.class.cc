@@ -52,9 +52,10 @@ void dbanalyze::loadColumns()
 		datatype = this->db->get("data_type");
 		numeric_precision = this->db->get("numeric_precision");
 		numeric_scale = this->db->get("numeric_scale");
-		is_nullable = this->db->get("nullable");
+		is_nullable = this->db->get("is_nullable");
 		table_schema = this->db->get("table_schema");
 		table_name = this->db->get("table_name");
+		character_maximum_length = this->db->get("character_maximum_length");
 
 		tablepntr = getTable(table_schema, table_name);
 		if(tablepntr!=NULL)

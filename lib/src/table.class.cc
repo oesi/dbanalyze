@@ -11,7 +11,7 @@ table::table(std::string schemaname, std::string tablename, std::string comment)
 	this->row_count = 0;
 }
 
-std::vector<constraint*> table::getConstraints(std::string schema, std::string table, std::string column_name)
+std::vector<constraint*> table::getConstraints(std::string column_name)
 {
 	std::vector<constraint*> retval;
 	for(unsigned int i=0;i < this->constraintlist.size();i++)

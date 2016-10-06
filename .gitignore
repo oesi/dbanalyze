@@ -2,3 +2,4 @@ cli/bin/
 lib/bin/
 compilerlog
 db
+data/*
