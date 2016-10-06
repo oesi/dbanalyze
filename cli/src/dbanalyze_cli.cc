@@ -21,6 +21,7 @@ int main (int argc, char *argv[])
 		("password,w", po::value<std::string>(), "Password")
 		("type,t", po::value<std::string>(), "Type - PostgreSQL, MySQL, SQLite")
 		("dbname,d", po::value<std::string>(), "Database Name")
+		("graph,g", po::value<std::string>(), "Graph")
 	;
 
 	po::variables_map vm;
@@ -67,16 +68,23 @@ int main (int argc, char *argv[])
 		std::cout << std::endl;
 	}
 
-	std::cout << "Analyzing data ..." << std::endl;
+	//std::cout << "Analyzing data ..." << std::endl;
 	dbanalyze dba(type, host, port, user, password, dbname);
 	dba.loadData();
 
 	output_cli out;
-	out.printData(dba.getTablelist());
 
-	statistic stat;
-	stat.analyze(dba.getTablelist());
-	out.printStatistic(&stat);
+	if (vm.count("graph"))
+	{
+		out.printGraph(dba.getTablelist());
+	}
+	else
+	{
+		out.printData(dba.getTablelist());
 
+		statistic stat;
+		stat.analyze(dba.getTablelist());
+		out.printStatistic(&stat);
+	}
 	return 0;
 }

@@ -15,6 +15,7 @@ class output_cli
 		void printColumn(column* column);
 		void printConstraint(constraint* constr);
 		void printStatistic(statistic* stat);
+		void printGraph(std::vector<table> *tablelist);
 };
 
 #endif //OUTPUT_CLI_CLASS
