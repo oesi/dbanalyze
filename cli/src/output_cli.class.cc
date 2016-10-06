@@ -116,19 +116,6 @@ void output_cli::printStatistic(statistic* stat)
 
 void output_cli::printGraph(std::vector<table> *tablelist)
 {
-	Agraph_t *g;
-
-	/* set up a graphviz context */
-	GVC_t *gvc = gvContext();
-
-	char* args[] = {(char*)"dot",(char*)"-Tpng",(char*)"-ograph.png"};
-
-	/* parse command line args - minimally argv[0] sets layout engine */
-	gvParseArgs(gvc, sizeof(args)/sizeof(char*), args);
-
-	/* Create a simple digraph */
-	g = agopen((char*)"g", Agdirected, 0);
-
 	std::map<std::string,std::vector<table*>> list;
 	unsigned int i;
 	table *tbl;
@@ -142,6 +129,18 @@ void output_cli::printGraph(std::vector<table> *tablelist)
 
 	for(auto &k : list)
 	{
+		Agraph_t *g;
+
+		/* set up a graphviz context */
+		GVC_t *gvc = gvContext();
+		std::string filename = "-odata/"+k.first+".png";
+		char* args[] = {(char*)"dot",(char*)"-Tpng",(char*)filename.c_str()};
+
+		/* parse command line args - minimally argv[0] sets layout engine */
+		gvParseArgs(gvc, sizeof(args)/sizeof(char*), args);
+
+		/* Create a simple digraph */
+		g = agopen((char*)"g", Agdirected, 0);
 		for(i = 0; i < k.second.size(); i++)
 		{
 			tbl = k.second.at(i);
@@ -171,46 +170,50 @@ void output_cli::printGraph(std::vector<table> *tablelist)
 			nodelist[tname]=n;
 		}
 
-	}
+		std::vector<Agedge_t*> edgelist;
 
-	std::vector<Agedge_t*> edgelist;
-
-	for(i = 0; i < tablelist->size(); i++)
-	{
-		tbl = &tablelist->at(i);
-		for(unsigned int j=0;j < tbl->constraintlist.size();j++)
+		for(i = 0; i < tablelist->size(); i++)
 		{
-			constraint *constr = tbl->constraintlist[j];
-			constraint_fk* fk = dynamic_cast< constraint_fk* >( constr );
-			if(fk)
+			tbl = &tablelist->at(i);
+			if(k.first==tbl->schemaname)
 			{
-				if(fk->target != NULL)
+				for(unsigned int j=0;j < tbl->constraintlist.size();j++)
 				{
-					std::string item = tbl->schemaname + "_" + tbl->tablename;
-					table *t1 = static_cast<table*>(fk->target->tablepntr);
-					std::string target = t1->schemaname + "_" + t1->tablename;
-					Agedge_t *e;
-					e = agedge(g, nodelist[item], nodelist[target], 0, 1);
-					edgelist.push_back(e);
+					constraint *constr = tbl->constraintlist[j];
+					constraint_fk* fk = dynamic_cast< constraint_fk* >( constr );
+					if(fk)
+					{
+						if(fk->target != NULL)
+						{
+
+							std::string item = tbl->schemaname + "_" + tbl->tablename;
+							table *t1 = static_cast<table*>(fk->target->tablepntr);
+							if(k.first==t1->schemaname)
+							{
+								std::string target = t1->schemaname + "_" + t1->tablename;
+								Agedge_t *e;
+								e = agedge(g, nodelist[item], nodelist[target], 0, 1);
+								edgelist.push_back(e);
+							}
+						}
+					}
 				}
 			}
 		}
+		/* Compute a layout using layout engine from command line args */
+		gvLayoutJobs(gvc, g);
+
+		/* Write the graph according to -T and -o options */
+		gvRenderJobs(gvc, g);
+
+		/* Free layout data */
+		gvFreeLayout(gvc, g);
+
+		/* Free graph structures */
+		agclose(g);
+
+		/* close output file, free context */
+		gvFreeContext(gvc);
+
 	}
-
-
-    /* Compute a layout using layout engine from command line args */
-    gvLayoutJobs(gvc, g);
-
-    /* Write the graph according to -T and -o options */
-    gvRenderJobs(gvc, g);
-
-	/* Free layout data */
-	gvFreeLayout(gvc, g);
-
-	/* Free graph structures */
-	agclose(g);
-
-	/* close output file, free context */
-	gvFreeContext(gvc);
-
 }
