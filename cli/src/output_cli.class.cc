@@ -1,5 +1,6 @@
 #include "output_cli.class.h"
 #include "formatter.h"
+#include "utils.h"
 #include <map>
 #include <fstream>
 #include <algorithm>
@@ -230,9 +231,35 @@ void output_cli::printGraph(std::vector<table> *tablelist)
 								std::string target = t1->schemaname + "_" + t1->tablename;
 								Agedge_t *e;
 								e = agedge(g, nodelist[item], nodelist[target], 0, 1);
-								agsafeset(e,(char*)"headport",(char*)fk->target->columnname.c_str(),(char*)"");
+
+								// set begin and end of edge to the column position (port)
 								column *source = static_cast<column*>(tbl->constraintlist[j]->source);
+								agsafeset(e,(char*)"headport",(char*)fk->target->columnname.c_str(),(char*)"");
 								agsafeset(e,(char*)"tailport",(char*)source->columnname.c_str(),(char*)"");
+
+								// set color of edge
+								std::string color;
+								color = StringToColor(tbl->constraintlist[j]->constraint_name);
+								agsafeset(e,(char*)"color",(char*)color.c_str(),(char*)"");
+
+								edgelist.push_back(e);
+							}
+							else
+							{
+								// if fk goes outside the schema create a Node with label and link to it
+								std::string target = t1->schemaname + "." + t1->tablename+"."+fk->target->columnname.c_str();
+								column *source = static_cast<column*>(tbl->constraintlist[j]->source);
+
+								Agnode_t *n = agnode(g, (char*)target.c_str(), 1);
+								agsafeset(n, (char*)"shape", (char*)"none", (char*)"");
+								agsafeset(n, (char*)"fontsize", (char*)"8", (char*)"");
+
+								Agedge_t *e;
+								e = agedge(g, nodelist[item], n, 0, 1);
+
+								// set the beginn of the edge to the column position
+								agsafeset(e,(char*)"tailport",(char*)source->columnname.c_str(),(char*)"");
+
 								edgelist.push_back(e);
 							}
 						}

@@ -57,8 +57,11 @@ void dbanalyze::loadColumns()
 		table_name = this->db->get("table_name");
 		character_maximum_length = this->db->get("character_maximum_length");
 
+		// Some Columns are surrounded by double qoutes
+		// Remove the qoutes if exists
 		if(column_name[0]=='"')
 			column_name = column_name.substr(1,column_name.length()-2);
+		
 		tablepntr = getTable(table_schema, table_name);
 		if(tablepntr!=NULL)
 			tablepntr->columnlist.push_back(column(tablepntr, column_name, datatype, character_maximum_length, numeric_precision, numeric_scale, is_nullable));
