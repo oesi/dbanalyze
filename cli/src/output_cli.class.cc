@@ -191,7 +191,7 @@ void output_cli::printGraph(std::vector<table> *tablelist)
 				}
 
 				html +=	"<TR>\
-					<TD><FONT POINT-SIZE=\"10\"> "+key+"</FONT></TD>\
+					<TD PORT=\""+tbl->columnlist[col].columnname+"\"><FONT POINT-SIZE=\"10\"> "+key+"</FONT></TD>\
 					<TD ALIGN=\"LEFT\"><FONT POINT-SIZE=\"10\">"+tbl->columnlist[col].columnname+"</FONT></TD>\
 					<TD ALIGN=\"LEFT\"><FONT POINT-SIZE=\"10\">"+datatype+"</FONT></TD>\
 					</TR>";
@@ -230,6 +230,9 @@ void output_cli::printGraph(std::vector<table> *tablelist)
 								std::string target = t1->schemaname + "_" + t1->tablename;
 								Agedge_t *e;
 								e = agedge(g, nodelist[item], nodelist[target], 0, 1);
+								agsafeset(e,(char*)"headport",(char*)fk->target->columnname.c_str(),(char*)"");
+								column *source = static_cast<column*>(tbl->constraintlist[j]->source);
+								agsafeset(e,(char*)"tailport",(char*)source->columnname.c_str(),(char*)"");
 								edgelist.push_back(e);
 							}
 						}
