@@ -2,6 +2,7 @@
 #define DBANALYZECLASS
 #include "database.class.h"
 #include "table.class.h"
+#include "graph.h"
 #include <string>
 #include <vector>
 #include <libgda/libgda.h>
