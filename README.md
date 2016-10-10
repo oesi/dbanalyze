@@ -29,6 +29,7 @@ Supported Databases
 ## Install
 
 ```
+apt-get install gtkmm-3.0-1
 apt-get install libgda-5.0-dev
 # PostgreSQL Support
 apt-get install libgda-5.0-postgres
@@ -50,13 +51,19 @@ gda-sql-5.0 -L
 
 Start ./car.sh to compile an run the application
 
-## Run Application
+## Run Commandline Application
 ./cli/bin/dbanalyze_cli --help
 
 source export.sh
 ./cli/bin/dbanalyze_cli -t MySQL -h localhost -d dbanalyze -u username -p 3306
 ./cli/bin/dbanalyze_cli -t PostgreSQL -h localhost -d dbanalyze -u username -p 5432
 ./cli/bin/dbanalyze_cli -t SQLite -d ./db/dbanalyze.sqlite
+
+# Draw Graph
+./cli/bin/dbanalyze_cli -t PostgreSQL -h localhost -d dbanalyze -u username -p 5432 -graph
+
+## Run GUI
+-/gui/bin/dbanalyze_gui
 
 ## Additional Links
 

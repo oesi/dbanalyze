@@ -15,8 +15,10 @@ g++ -shared $lib_src \
 	-std=gnu++11 `pkg-config --cflags --libs libgda-5.0` \
 	-fPIC \
 	-Wall \
+	-lcgraph \
+	-lgvc \
 	-I ./lib/include \
-	-o ./lib/bin/libdatabase.so &>> compilerlog
+	-o ./lib/bin/libdbanalyze.so &>> compilerlog
 
 # Save Return Value
 ret_lib=$?
@@ -33,18 +35,33 @@ g++ $cli_src -std=gnu++11 `pkg-config --cflags --libs libgda-5.0` \
 	-I ./cli/include \
 	-I ./lib/include \
 	-lboost_program_options\
-	-ldatabase \
-	-lcgraph \
-	-lgvc \
+	-ldbanalyze \
 	-o ./cli/bin/dbanalyze_cli &>> compilerlog
 
 # Save Return Value
 ret_cli=$?
 
+#### Compile GUI ####
+
+# get cc files from gui/src/
+gui_src="`ls -d -1 ./gui/src/**.cc`"
+
+# compile commandline interface
+g++ $gui_src -std=gnu++11 `pkg-config --cflags --libs gtkmm-3.0 libgda-5.0` \
+	-Wall \
+	-L ./lib/bin \
+	-I ./gui/include \
+	-I ./lib/include \
+	-ldbanalyze \
+	-o ./gui/bin/dbanalyze_gui &>> compilerlog
+
+# Save Return Value
+ret_gui=$?
+
 lines="`cat compilerlog | wc -l`"
 # Start program or display error messages
 #./cli/bin/dbanalyze_cli -h localhost -p 5433 -u dbanalyze -d analyzetest -t PostgreSQL -w dbanalyze -xaa | java -jar /home/oesi/Downloads/plantuml.jar -pipe > diag.png
-if [[ ( $ret_cli -eq 0 ) && ( $ret_lib -eq 0 ) ]]; then
+if [[ ( $ret_cli -eq 0 ) && ( $ret_lib -eq 0 ) && ( $ret_gui -eq 0 ) ]]; then
 	if [[ $1 == 'norun' ]]; then
 		echo "done"
 	elif [[ $1 == 'mysql' ]]; then
@@ -55,6 +72,8 @@ if [[ ( $ret_cli -eq 0 ) && ( $ret_lib -eq 0 ) ]]; then
 		./cli/bin/dbanalyze_cli -t SQLite -d ./db/dbanalyze.sqlite
 	elif [[ $1 == 'graph' ]]; then
 		./cli/bin/dbanalyze_cli -h localhost -p 5433 -u dbanalyze -d analyzetest -t PostgreSQL -w dbanalyze -graph
+	elif [[ $1 == 'gui' ]]; then
+		./gui/bin/dbanalyze_gui
 	else
 		./cli/bin/dbanalyze_cli -h localhost -p 5433 -u dbanalyze -d analyzetest -t PostgreSQL -w dbanalyze
 	fi
