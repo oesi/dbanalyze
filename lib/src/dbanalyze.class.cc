@@ -7,9 +7,19 @@
 #include <iostream>
 #include <sstream>
 
+dbanalyze::dbanalyze()
+{
+}
+
 dbanalyze::dbanalyze(std::string type, std::string host, int port, std::string user, std::string password, std::string dbname)
 {
-	this->db = new database(type, host, port, user, password, dbname);
+	this->connect(type, host, port, user, password, dbname);
+}
+
+bool dbanalyze::connect(std::string type, std::string host, int port, std::string user, std::string password, std::string dbname)
+{
+	this->db = new database();
+	return db->connect(type, host, port, user, password, dbname);
 }
 
 void dbanalyze::loadData()
@@ -61,7 +71,7 @@ void dbanalyze::loadColumns()
 		// Remove the qoutes if exists
 		if(column_name[0]=='"')
 			column_name = column_name.substr(1,column_name.length()-2);
-		
+
 		tablepntr = getTable(table_schema, table_name);
 		if(tablepntr!=NULL)
 			tablepntr->columnlist.push_back(column(tablepntr, column_name, datatype, character_maximum_length, numeric_precision, numeric_scale, is_nullable));

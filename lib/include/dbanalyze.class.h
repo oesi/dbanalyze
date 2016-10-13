@@ -11,8 +11,10 @@
 class dbanalyze
 {
 	public:
+		dbanalyze();
 		dbanalyze(std::string type, std::string host, int port, std::string user, std::string password, std::string dbname);
 		~dbanalyze();
+		bool connect(std::string type, std::string host, int port, std::string user, std::string password, std::string dbname);
 		void loadData();
 		void loadTables();
 		void loadColumns();

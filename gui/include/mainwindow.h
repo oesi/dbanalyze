@@ -16,6 +16,8 @@
 #ifndef DBA_MAINWINDOW_H
 #define DBA_MAINWINDOW_H
 
+#include "dbanalyze.h"
+#include "worker.h"
 #include <gtkmm.h>
 #include <iostream>
 
@@ -25,11 +27,18 @@ public:
 	MainWindow(const Glib::RefPtr<Gtk::Application>& app);
 	virtual ~MainWindow();
 
-private:
+	void notify();
+	void on_worker_notification();
+	Glib::Dispatcher m_Dispatcher;
+	std::thread* m_WorkerThread;
+	Worker m_Worker;
+
 	void on_headerbar_button_clicked();
 	void on_button_connect_clicked();
 	void addDatabaseEntrys();
 	void on_infobar_response(int response);
+
+	dbanalyze db;
 
 	//Child widgets:
 	Gtk::Box m_VBox;

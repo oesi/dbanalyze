@@ -1,6 +1,10 @@
 #include "database.class.h"
 #include <iostream>
-database::database(std::string type, std::string host, int port, std::string user, std::string password, std::string dbname)
+database::database()
+{
+}
+
+bool database::connect(std::string type, std::string host, int port, std::string user, std::string password, std::string dbname)
 {
 	GError *error = NULL;
 	std::string connstr, authstr;
@@ -8,7 +12,7 @@ database::database(std::string type, std::string host, int port, std::string use
 	this->dbname = dbname;
 	this->type = type;
 
-	connstr = "DB_NAME="+dbname+";PORT="+std::to_string(port);
+	connstr = "HOST="+host+";DB_NAME="+dbname+";PORT="+std::to_string(port);
 	authstr = "USERNAME="+user+";PASSWORD="+password;
 
 	gda_init ();
@@ -20,8 +24,9 @@ database::database(std::string type, std::string host, int port, std::string use
 	{
 		g_print ("Could not open connection to database: %s\n",
 			error && error->message ? error->message : "No detail");
-		exit (1);
+		return false;
 	}
+	return true;
 }
 
 void database::loadTables()

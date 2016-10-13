@@ -18,18 +18,19 @@
 #include <string>
 #include <exception>
 #include <sstream>
-#include "dbanalyze.h"
-
+#include <thread>
+#include <mutex>
 
 MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 : 	m_VBox(Gtk::ORIENTATION_VERTICAL, 6)
 {
+	m_WorkerThread=NULL;
 	set_title("DBAnalyze");
 	set_size_request(800, 600);
 
 	// Button go-home-symbolic
 	m_headerbar_button.set_image_from_icon_name("document-open-symbolic", Gtk::ICON_SIZE_BUTTON, true);
-	m_headerbar_button.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_headerbar_button_clicked));
+	m_Dispatcher.connect(sigc::mem_fun(*this, &MainWindow::on_worker_notification));
 
 	m_header_bar.set_title("DBAnalyze");
 	m_header_bar.set_subtitle("Choose a Database");
@@ -64,8 +65,8 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 
 	addDatabaseEntrys();
 	show_all_children();
-
 	m_InfoBar.hide();
+
 }
 
 void MainWindow::addDatabaseEntrys()
@@ -82,27 +83,27 @@ void MainWindow::addDatabaseEntrys()
 
 	// Host
 	m_EntryHost.set_max_length(50);
-	m_EntryHost.set_text("Host");
+	m_EntryHost.set_text("localhost");
 	m_grid.add(m_EntryHost);
 
 	// Port
 	m_EntryPort.set_max_length(50);
-	m_EntryPort.set_text("Port");
+	m_EntryPort.set_text("5433");
 	m_grid.add(m_EntryPort);
 
 	// DB
 	m_EntryDB.set_max_length(50);
-	m_EntryDB.set_text("DB Name");
+	m_EntryDB.set_text("analyzetest");
 	m_grid.add(m_EntryDB);
 
 	// User
 	m_EntryUser.set_max_length(50);
-	m_EntryUser.set_text("User");
+	m_EntryUser.set_text("dbanalyze");
 	m_grid.add(m_EntryUser);
 
 	// Pass
 	m_EntryPass.set_max_length(50);
-	m_EntryPass.set_text("Password");
+	m_EntryPass.set_text("dbanalyze");
 	m_EntryPass.set_visibility(false);
 	m_grid.add(m_EntryPass);
 
@@ -111,7 +112,7 @@ void MainWindow::addDatabaseEntrys()
 	m_grid.add(m_ButtonConnect);
 
 	m_ButtonConnect.signal_clicked().connect( sigc::mem_fun(*this,
-              &MainWindow::on_button_connect_clicked) );
+		&MainWindow::on_button_connect_clicked) );
 }
 
 void MainWindow::on_infobar_response(int)
@@ -123,37 +124,44 @@ void MainWindow::on_infobar_response(int)
 
 void MainWindow::on_button_connect_clicked()
 {
-	m_Message_Label.set_text("Connecting ...");
-	m_InfoBar.set_message_type(Gtk::MESSAGE_WARNING);
-	m_InfoBar.show();
 
-	std::string type = m_ComboDbtype.get_active_text();
-	std::string host = m_EntryHost.get_text();
-	std::string dbname = m_EntryDB.get_text();
-	int port = std::stoi(m_EntryPort.get_text());
-	std::string user = m_EntryUser.get_text();
-	std::string password = m_EntryPass.get_text();
-
-	dbanalyze dba(type, host, port, user, password, dbname);
-	m_Message_Label.set_text("Loading Data ...");
-	m_InfoBar.show();
-	dba.loadData();
-	m_Message_Label.set_text("Data loaded successfully!");
-	m_InfoBar.show();
-
-}
-
-void MainWindow::on_headerbar_button_clicked()
-{
-	Gtk::FileChooserDialog dialog("Please choose a file", Gtk::FILE_CHOOSER_ACTION_OPEN);
-	dialog.set_transient_for(*this);
-
-	//Add response buttons the the dialog:
-	dialog.add_button("_Cancel", Gtk::RESPONSE_CANCEL);
-	dialog.add_button("_Open", Gtk::RESPONSE_OK);
-
+	if (m_WorkerThread)
+	{
+		std::cout << "Can't start a worker thread while another one is running." << std::endl;
+	}
+	else
+	{
+		// Start a new worker thread.
+		m_WorkerThread = new std::thread(
+		[this]
+		{
+			m_Worker.do_work(this);
+		});
+	}
 }
 
 MainWindow::~MainWindow()
 {
+}
+
+void MainWindow::notify()
+{
+	m_Dispatcher.emit();
+}
+
+void MainWindow::on_worker_notification()
+{
+	std::string msg;
+	m_Worker.get_data(&msg);
+	m_Message_Label.set_text(msg);
+	m_InfoBar.show();
+
+	if (m_WorkerThread && m_Worker.has_stopped())
+	{
+		// Work is done.
+		if (m_WorkerThread->joinable())
+			m_WorkerThread->join();
+		delete m_WorkerThread;
+		m_WorkerThread = nullptr;
+	}
 }

@@ -10,8 +10,9 @@
 class database
 {
 	public:
-		database(std::string type, std::string host, int port, std::string user, std::string password, std::string dbname);
+		database();
 		~database();
+		bool connect(std::string type, std::string host, int port, std::string user, std::string password, std::string dbname);
 		bool query(std::string sql);
 		bool queryMeta(std::string sql);
 		bool nextRow();
