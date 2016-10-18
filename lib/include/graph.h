@@ -1,1 +1,1 @@
-void printGraph(std::vector<table> *tablelist);
+void printGraph(std::vector<table> *tablelist, std::string name);

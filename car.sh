@@ -6,7 +6,8 @@ export LD_LIBRARY_PATH=.export LD_LIBRARY_PATH=./lib/bin
 echo '' > compilerlog
 
 #### Compile LIB ####
-
+ret_lib=0
+if [[ $1 != 'gui' ]]; then
 # get cc files from lib/src/
 lib_src="`ls -d -1 ./lib/src/**.cc`"
 
@@ -22,9 +23,11 @@ g++ -shared $lib_src \
 
 # Save Return Value
 ret_lib=$?
+fi
 
 #### Compile CLI ####
-
+ret_cli=0
+if [[ $1 != 'gui' ]]; then
 # get cc files from cli/src/
 cli_src="`ls -d -1 ./cli/src/**.cc`"
 
@@ -40,7 +43,7 @@ g++ $cli_src -std=gnu++11 `pkg-config --cflags --libs libgda-5.0` \
 
 # Save Return Value
 ret_cli=$?
-
+fi
 #### Compile GUI ####
 
 # get cc files from gui/src/

@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <graphviz/gvc.h>
 
-void printGraph(std::vector<table> *tablelist)
+void printGraph(std::vector<table> *tablelist, std::string name)
 {
 	std::map<std::string,std::vector<table*>> list;
 	unsigned int i;
@@ -13,20 +13,22 @@ void printGraph(std::vector<table> *tablelist)
 	std::map<std::string, Agnode_t*> nodelist;
 
 	// get all schema
+	/*
 	for(i = 0; i < tablelist->size(); i++)
 	{
 		tbl = &tablelist->at(i);
 		list[tbl->schemaname].push_back(tbl);
-	}
+	}*/
 
 	// create a file per schema
-	for(auto &k : list)
-	{
+	//for(auto &k : list)
+	//{
+
 		Agraph_t *g;
 
 		/* set up a graphviz context */
 		GVC_t *gvc = gvContext();
-		std::string filename = "-odata/"+k.first+".png";
+		std::string filename = "-odata/"+name+".png";
 
 		// set outputfile, filetype, and graphtype
 		char* args[] = {(char*)"dot",(char*)"-Tpng",(char*)filename.c_str()};
@@ -37,10 +39,10 @@ void printGraph(std::vector<table> *tablelist)
 		/* Create a simple digraph */
 		g = agopen((char*)"g", Agdirected, 0);
 
-		// cycle throu tables of schema
-		for(i = 0; i < k.second.size(); i++)
+		// cycle throu tables
+		for(i = 0; i < tablelist->size(); i++)
 		{
-			tbl = k.second.at(i);
+			tbl = &tablelist->at(i);
 			std::string tname = tbl->schemaname + "_" + tbl->tablename;
 
 			// Create Graph Table Node
@@ -59,7 +61,6 @@ void printGraph(std::vector<table> *tablelist)
 			// print the columns
 			for(unsigned int col=0; col<tbl->columnlist.size(); col++)
 			{
-
 				std::string datatype=tbl->columnlist[col].getColumnType();
 				std::string key="";
 				// Primary Key
@@ -103,8 +104,6 @@ void printGraph(std::vector<table> *tablelist)
 		for(i = 0; i < tablelist->size(); i++)
 		{
 			tbl = &tablelist->at(i);
-			if(k.first==tbl->schemaname)
-			{
 				for(unsigned int j=0;j < tbl->constraintlist.size();j++)
 				{
 					constraint *constr = tbl->constraintlist[j];
@@ -116,8 +115,8 @@ void printGraph(std::vector<table> *tablelist)
 							std::string item = tbl->schemaname + "_" + tbl->tablename;
 							table *t1 = static_cast<table*>(fk->target->tablepntr);
 							// only create FK if it is in the same schema
-							if(k.first==t1->schemaname)
-							{
+							//if(k.first==t1->schemaname)
+							//{
 								std::string target = t1->schemaname + "_" + t1->tablename;
 								Agedge_t *e;
 								e = agedge(g, nodelist[item], nodelist[target], 0, 1);
@@ -133,7 +132,7 @@ void printGraph(std::vector<table> *tablelist)
 								agsafeset(e,(char*)"color",(char*)color.c_str(),(char*)"");
 
 								edgelist.push_back(e);
-							}
+							/*}
 							else
 							{
 								// if fk goes outside the schema create a Node with label and link to it
@@ -151,11 +150,11 @@ void printGraph(std::vector<table> *tablelist)
 								agsafeset(e,(char*)"tailport",(char*)source->columnname.c_str(),(char*)"");
 
 								edgelist.push_back(e);
-							}
+							}*/
 						}
 					}
 				}
-			}
+			//}
 		}
 		/* Compute a layout using layout engine from command line args */
 		gvLayoutJobs(gvc, g);
@@ -172,5 +171,5 @@ void printGraph(std::vector<table> *tablelist)
 		/* close output file, free context */
 		gvFreeContext(gvc);
 
-	}
+	//}
 }

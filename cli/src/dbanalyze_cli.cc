@@ -76,7 +76,7 @@ int main (int argc, char *argv[])
 
 	if (vm.count("graph"))
 	{
-		printGraph(dba.getTablelist());
+		printGraph(dba.getTablelist(),"output");
 	}
 	else
 	{

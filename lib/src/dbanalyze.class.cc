@@ -24,6 +24,8 @@ bool dbanalyze::connect(std::string type, std::string host, int port, std::strin
 
 void dbanalyze::loadData()
 {
+	this->tablelist.clear();
+	
 	this->loadTables();
 	this->loadColumns();
 	this->loadConstraints();

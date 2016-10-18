@@ -18,6 +18,7 @@
 
 #include "dbanalyze.h"
 #include "worker.h"
+#include "tablelist.h"
 #include <gtkmm.h>
 #include <iostream>
 
@@ -33,19 +34,23 @@ public:
 	std::thread* m_WorkerThread;
 	Worker m_Worker;
 
-	void on_headerbar_button_clicked();
-	void on_button_connect_clicked();
 	void addDatabaseEntrys();
+	void on_button_connect_clicked();
 	void on_infobar_response(int response);
+	void on_headerbar_button_clicked();
 
 	dbanalyze db;
 
+	tablelist tl;
+
 	//Child widgets:
+	Gtk::SearchBar m_search_bar;
+	Gtk::Box m_searchbarbox;
 	Gtk::Box m_VBox;
+	Gtk::Paned m_HBoxTable;
 	Gtk::Box m_BoxNotebookDatabase, m_BoxChart;
 	Gtk::Button m_headerbar_button,m_ButtonConnect;
 	Gtk::HeaderBar m_header_bar;
-	Gtk::Notebook m_Notebook;
 	Gtk::Entry m_EntryUser, m_EntryPass, m_EntryPort, m_EntryHost, m_EntryDB;
 	Gtk::Label m_Label1, m_Label2;
 	Gtk::ComboBoxText m_ComboDbtype;
@@ -53,6 +58,7 @@ public:
 	Glib::RefPtr<Gtk::Builder> m_refBuilder;
 	Gtk::InfoBar m_InfoBar;
 	Gtk::Label m_Message_Label;
+	Gtk::Image m_image;
 
 	Gtk::ButtonBox m_ButtonBox;
 
