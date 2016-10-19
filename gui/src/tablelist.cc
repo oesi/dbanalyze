@@ -58,6 +58,28 @@ void tablelist::fillTable(std::vector<table>* tables)
 
 }
 
+std::map<std::string, std::map<std::string, std::string>> tablelist::getSelected()
+{
+	std::map<std::string, std::map<std::string, std::string>> selecteditems;
+
+	typedef Gtk::TreeModel::Children type_children; //minimise code length.
+	type_children children = m_refTreeModel->children();
+	for(type_children::iterator iter = children.begin();iter != children.end(); ++iter)
+	{
+		Gtk::TreeModel::Row row = *iter;
+		if(row[m_Columns.m_col_selected])
+		{
+			Glib::ustring schema = row[m_Columns.m_col_schemaname];
+			Glib::ustring table = row[m_Columns.m_col_tablename];
+			std::string key = schema+"_"+table;
+
+			selecteditems[key]["tablename"]=table;
+			selecteditems[key]["schemaname"]=schema;
+		}
+	}
+	return selecteditems;
+}
+
 tablelist::~tablelist()
 {
 }

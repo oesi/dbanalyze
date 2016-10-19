@@ -38,6 +38,7 @@ public:
 	void on_button_connect_clicked();
 	void on_infobar_response(int response);
 	void on_headerbar_button_clicked();
+	void on_drawgraph_button_clicked();
 
 	dbanalyze db;
 
@@ -47,6 +48,7 @@ public:
 	Gtk::SearchBar m_search_bar;
 	Gtk::Box m_searchbarbox;
 	Gtk::Box m_VBox;
+	Gtk::Box m_Tablebox;
 	Gtk::Paned m_HBoxTable;
 	Gtk::Box m_BoxNotebookDatabase, m_BoxChart;
 	Gtk::Button m_headerbar_button,m_ButtonConnect;
@@ -61,7 +63,7 @@ public:
 	Gtk::Image m_image;
 
 	Gtk::ButtonBox m_ButtonBox;
-
+	Gtk::Button m_drawgraph_button;
 
 };
 

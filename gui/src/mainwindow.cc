@@ -25,6 +25,7 @@
 
 MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 : 	m_VBox(Gtk::ORIENTATION_VERTICAL, 6),
+	m_Tablebox(Gtk::ORIENTATION_VERTICAL),
 	m_HBoxTable(Gtk::ORIENTATION_HORIZONTAL)
 {
 	m_WorkerThread=NULL;
@@ -34,6 +35,7 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 	// Button go-home-symbolic
 	m_headerbar_button.set_image_from_icon_name("document-open-symbolic", Gtk::ICON_SIZE_BUTTON, true);
 	m_headerbar_button.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_headerbar_button_clicked));
+	m_drawgraph_button.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_drawgraph_button_clicked));
 	m_Dispatcher.connect(sigc::mem_fun(*this, &MainWindow::on_worker_notification));
 
 	m_header_bar.set_title("DBAnalyze");
@@ -65,10 +67,13 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 
 	addDatabaseEntrys();
 
-	m_VBox.pack_start(m_HBoxTable);
-	m_HBoxTable.pack1(tl);
-	m_HBoxTable.pack2(m_image);
+	m_drawgraph_button.set_label("Redraw Graph");
+	m_Tablebox.pack_start(tl);
+	m_Tablebox.pack_start(m_drawgraph_button,Gtk::PACK_SHRINK);
 
+	m_VBox.pack_start(m_HBoxTable);
+	m_HBoxTable.pack1(m_Tablebox);
+	m_HBoxTable.pack2(m_image);
 
 	show_all_children();
 	m_InfoBar.hide();
@@ -150,6 +155,22 @@ void MainWindow::on_button_connect_clicked()
 			m_Worker.do_work(this);
 		});
 	}
+}
+
+void MainWindow::on_drawgraph_button_clicked()
+{
+	std::map<std::string, std::map<std::string, std::string>> selecteditems;
+	selecteditems = tl.getSelected();
+
+	std::vector<table> tablelist;
+	for(auto & i:selecteditems)
+	{
+		table *tbl = this->db.getTable(i.second["schemaname"],i.second["tablename"]);
+		if(tbl)
+			tablelist.push_back(*tbl);
+	}
+	printGraph(&tablelist, "current");
+	m_image.set("data/current.png");
 }
 
 MainWindow::~MainWindow()

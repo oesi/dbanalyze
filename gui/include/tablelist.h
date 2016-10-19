@@ -25,6 +25,7 @@ public:
 	tablelist();
 	virtual ~tablelist();
 	void fillTable(std::vector<table>* tables);
+	std::map<std::string, std::map<std::string, std::string>> getSelected();
 
 protected:
 	//Signal handlers:
