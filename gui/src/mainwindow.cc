@@ -74,6 +74,7 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 	m_VBox.pack_start(m_HBoxTable);
 	m_HBoxTable.pack1(m_Tablebox);
 	m_HBoxTable.pack2(m_image);
+	m_HBoxTable.set_position(250);
 
 	show_all_children();
 	m_InfoBar.hide();

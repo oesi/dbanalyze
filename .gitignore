@@ -1,5 +1,8 @@
-cli/bin/
-lib/bin/
+cli/bin/*
+lib/bin/*
+gui/bin/*
 compilerlog
 db
 data/*
+**/Makefile
+**/build
