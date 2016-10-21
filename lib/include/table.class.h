@@ -6,8 +6,7 @@
 
 #include <string>
 #include <vector>
-#include <libgda/libgda.h>
-#include <sql-parser/gda-sql-parser.h>
+//#include <sql-parser/gda-sql-parser.h>
 
 class table
 {

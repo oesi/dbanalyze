@@ -33,7 +33,7 @@ int main (int argc, char *argv[])
 		std::cout << desc << "\n";
 		return 1;
 	}
-	int port;
+	int port=0;
 	std::string host, user, dbname, type, password;
 
 	if (vm.count("port"))
@@ -70,7 +70,7 @@ int main (int argc, char *argv[])
 
 	//std::cout << "Analyzing data ..." << std::endl;
 	dbanalyze dba(type, host, port, user, password, dbname);
-	dba.loadData();
+	dba.loadData(true);
 
 	output_cli out;
 

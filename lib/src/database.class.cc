@@ -2,6 +2,7 @@
 #include <iostream>
 database::database()
 {
+	this->data_model = NULL;
 }
 
 bool database::connect(std::string type, std::string host, int port, std::string user, std::string password, std::string dbname)
@@ -129,8 +130,11 @@ void database::getTableSize(std::string schemaname, std::string tablename)
 
 database::~database()
 {
-	g_object_unref (this->data_model);
-	gda_connection_close (this->dbconn);
+	if(this->data_model != NULL)
+		g_object_unref (this->data_model);
+
+	if(this->dbconn)
+		gda_connection_close (this->dbconn);
 }
 
 bool database::query(std::string sql)

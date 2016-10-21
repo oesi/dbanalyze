@@ -64,6 +64,7 @@ public:
 
 	Gtk::ButtonBox m_ButtonBox;
 	Gtk::Button m_drawgraph_button;
+	Gtk::ScrolledWindow m_scrollwindowgraph;
 
 };
 

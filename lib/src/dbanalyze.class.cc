@@ -22,14 +22,17 @@ bool dbanalyze::connect(std::string type, std::string host, int port, std::strin
 	return db->connect(type, host, port, user, password, dbname);
 }
 
-void dbanalyze::loadData()
+void dbanalyze::loadData(bool withsize)
 {
 	this->tablelist.clear();
-	
+
 	this->loadTables();
 	this->loadColumns();
 	this->loadConstraints();
-	this->loadTableSize();
+	if(withsize)
+	{
+		this->loadTableSize();
+	}
 }
 
 void dbanalyze::loadTables()

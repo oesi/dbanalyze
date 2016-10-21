@@ -4,7 +4,7 @@
 #include <map>
 #include <algorithm>
 #include <graphviz/gvc.h>
-
+#include <iostream>
 void printGraph(std::vector<table> *tablelist, std::string name)
 {
 	std::map<std::string,std::vector<table*>> list;
@@ -85,7 +85,6 @@ void printGraph(std::vector<table> *tablelist, std::string name)
 
 		nodelist[tname]=n;
 	}
-
 	// Draw Edges (Foreign Keys) between Tables
 	std::vector<Agedge_t*> edgelist;
 
@@ -146,6 +145,7 @@ void printGraph(std::vector<table> *tablelist, std::string name)
 			}
 		}
 	}
+
 	/* Compute a layout using layout engine from command line args */
 	gvLayoutJobs(gvc, g);
 

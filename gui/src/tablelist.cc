@@ -17,7 +17,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include "tablelist.h"
-
+#define DBANALYZE_CONFIG_MAX_DEFAULT_SELECTED_ITEMS 5
 using std::sprintf;
 using std::strtol;
 
@@ -53,7 +53,11 @@ void tablelist::fillTable(std::vector<table>* tables)
 		Gtk::TreeModel::Row row = *(m_refTreeModel->append());
 		row[m_Columns.m_col_tablename] = tables->at(i).tablename;
 		row[m_Columns.m_col_schemaname] = tables->at(i).schemaname;
-		row[m_Columns.m_col_selected] = true;
+
+		if(i<DBANALYZE_CONFIG_MAX_DEFAULT_SELECTED_ITEMS)
+			row[m_Columns.m_col_selected] = true;
+		else
+			row[m_Columns.m_col_selected] = false;
 	}
 
 }

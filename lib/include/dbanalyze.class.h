@@ -1,12 +1,11 @@
 #ifndef DBANALYZECLASS
 #define DBANALYZECLASS
-#include "database.class.h"
 #include "table.class.h"
 #include "graph.h"
 #include <string>
 #include <vector>
-#include <libgda/libgda.h>
-#include <sql-parser/gda-sql-parser.h>
+
+class database;
 
 class dbanalyze
 {
@@ -15,7 +14,7 @@ class dbanalyze
 		dbanalyze(std::string type, std::string host, int port, std::string user, std::string password, std::string dbname);
 		~dbanalyze();
 		bool connect(std::string type, std::string host, int port, std::string user, std::string password, std::string dbname);
-		void loadData();
+		void loadData(bool withsize);
 		void loadTables();
 		void loadColumns();
 		void loadConstraints();
@@ -27,7 +26,7 @@ class dbanalyze
 
 	private:
 		std::vector<table> tablelist;
-		database *db;
+		database *db = NULL;
 };
 
 #endif //DBANALYZECLASS

@@ -28,6 +28,9 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 	m_Tablebox(Gtk::ORIENTATION_VERTICAL),
 	m_HBoxTable(Gtk::ORIENTATION_HORIZONTAL)
 {
+	// Cast app to void to remove compiler warning
+	(void) app;
+
 	m_WorkerThread=NULL;
 	set_title("DBAnalyze");
 	set_size_request(800, 600);
@@ -73,7 +76,11 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 
 	m_VBox.pack_start(m_HBoxTable);
 	m_HBoxTable.pack1(m_Tablebox);
-	m_HBoxTable.pack2(m_image);
+	m_scrollwindowgraph.add(m_image);
+	//Only show the scrollbars when they are necessary:
+	m_scrollwindowgraph.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
+
+	m_HBoxTable.pack2(m_scrollwindowgraph);
 	m_HBoxTable.set_position(250);
 
 	show_all_children();
@@ -198,8 +205,7 @@ void MainWindow::on_worker_notification()
 		m_WorkerThread = nullptr;
 		tl.fillTable(this->db.getTablelist());
 
-		printGraph(this->db.getTablelist(), "current");
-		m_image.set("data/current.png");
+		on_drawgraph_button_clicked();
 		m_search_bar.set_search_mode(false);
 	}
 }

@@ -11,7 +11,7 @@ QMAKE_CXXFLAGS += -std=gnu++11
 CONFIG += link_pkgconfig
 
 PKGCONFIG += gtkmm-3.0
-PKGCONFIG += libgda-5.0
+#PKGCONFIG += libgda-5.0
 
 CXXFLAGS += -Wall
 CXX = g++
