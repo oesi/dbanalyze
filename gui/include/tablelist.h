@@ -19,17 +19,20 @@
 #include <gtkmm.h>
 #include "table.class.h"
 
+
 class tablelist : public Gtk::ScrolledWindow
 {
 public:
-	tablelist();
+	tablelist(void *mw);
 	virtual ~tablelist();
 	void fillTable(std::vector<table>* tables);
 	std::map<std::string, std::map<std::string, std::string>> getSelected();
 
 protected:
+	void *mw;
 	//Signal handlers:
 	void on_button_quit();
+	void on_select_toggled(Glib::ustring);
 
 	void treeviewcolumn_validated_on_cell_data(Gtk::CellRenderer* renderer, const Gtk::TreeModel::iterator& iter);
 	void cellrenderer_validated_on_editing_started(Gtk::CellEditable* cell_editable, const Glib::ustring& path);

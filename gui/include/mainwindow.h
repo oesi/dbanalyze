@@ -27,6 +27,7 @@ class MainWindow : public Gtk::Window
 public:
 	MainWindow(const Glib::RefPtr<Gtk::Application>& app);
 	virtual ~MainWindow();
+	void drawGraph();
 
 	void notify();
 	void on_worker_notification();

@@ -26,7 +26,8 @@
 MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 : 	m_VBox(Gtk::ORIENTATION_VERTICAL, 6),
 	m_Tablebox(Gtk::ORIENTATION_VERTICAL),
-	m_HBoxTable(Gtk::ORIENTATION_HORIZONTAL)
+	m_HBoxTable(Gtk::ORIENTATION_HORIZONTAL),
+	tl(this)
 {
 	// Cast app to void to remove compiler warning
 	(void) app;
@@ -166,6 +167,11 @@ void MainWindow::on_button_connect_clicked()
 }
 
 void MainWindow::on_drawgraph_button_clicked()
+{
+	this->drawGraph();
+}
+
+void MainWindow::drawGraph()
 {
 	std::map<std::string, std::map<std::string, std::string>> selecteditems;
 	selecteditems = tl.getSelected();
