@@ -15,7 +15,7 @@
  */
 #include "mainwindow.h"
 #include "tablelist.h"
-#include "graph.h"
+#include "graph.class.h"
 #include <iostream>
 #include <string>
 #include <exception>
@@ -24,10 +24,10 @@
 #include <mutex>
 
 MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
-: 	m_VBox(Gtk::ORIENTATION_VERTICAL, 6),
+: 	tl(this),
+	m_VBox(Gtk::ORIENTATION_VERTICAL, 6),
 	m_Tablebox(Gtk::ORIENTATION_VERTICAL),
-	m_HBoxTable(Gtk::ORIENTATION_HORIZONTAL),
-	tl(this)
+	m_HBoxTable(Gtk::ORIENTATION_HORIZONTAL)
 {
 	// Cast app to void to remove compiler warning
 	(void) app;
@@ -174,8 +174,9 @@ void MainWindow::on_drawgraph_button_clicked()
 void MainWindow::drawGraph()
 {
 	std::map<std::string, std::map<std::string, std::string>> selecteditems;
-	selecteditems = tl.getSelected();
 
+	// Create a vector with all selected tables
+	selecteditems = tl.getSelected();
 	std::vector<table> tablelist;
 	for(auto & i:selecteditems)
 	{
@@ -183,8 +184,45 @@ void MainWindow::drawGraph()
 		if(tbl)
 			tablelist.push_back(*tbl);
 	}
-	printGraph(&tablelist, "current");
-	m_image.set("data/current.png");
+
+	// Create a graph with the selected tables
+	graph g(&tablelist);
+
+	// Convert the Graph to a Pixbuf
+	image_type buf = g.getImage();
+
+	Glib::RefPtr<Gdk::Pixbuf> pixbuf;
+	Glib::RefPtr<Gdk::PixbufLoader> loader;
+	loader = Gdk::PixbufLoader::create();
+
+	try
+	{
+		loader->write((const guint8*)buf.image_buffer, buf.image_size);
+	}
+	catch(Gdk::PixbufError e)
+	{
+		std::cout << e.what() << std::endl;
+	}
+
+	loader->close();
+	pixbuf = loader->get_pixbuf();
+
+	// Scale Image if it is bigger than the viewport
+	int height = pixbuf->get_height();
+	int width = pixbuf->get_width();
+
+	float maxwidth = m_image.get_allocated_width() + 0.0;
+	float maxheight = m_image.get_allocated_height() + 0.0;
+
+	if(height>maxheight || width>maxwidth)
+	{
+		float scalefactor = height/maxheight;
+		if(scalefactor<width/maxwidth)
+			scalefactor = width/maxwidth;
+		pixbuf = pixbuf->scale_simple(width/scalefactor,height/scalefactor,Gdk::INTERP_BILINEAR);
+	}
+
+	m_image.set(pixbuf);
 }
 
 MainWindow::~MainWindow()

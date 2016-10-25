@@ -1,31 +1,32 @@
 #include "table.class.h"
+#include "graph.class.h"
 #include "constraint_fk.class.h"
 #include "utils.h"
 #include <map>
 #include <algorithm>
 #include <graphviz/gvc.h>
 #include <iostream>
-void printGraph(std::vector<table> *tablelist, std::string name)
+
+graph::graph(std::vector<table> *tablelist)
 {
 	std::map<std::string,std::vector<table*>> list;
 	unsigned int i;
 	table *tbl;
 	std::map<std::string, Agnode_t*> nodelist;
 
-	Agraph_t *g;
-
 	/* set up a graphviz context */
-	GVC_t *gvc = gvContext();
-	std::string filename = "-odata/"+name+".png";
+	this->gvc = gvContext();
 
 	// set outputfile, filetype, and graphtype
-	char* args[] = {(char*)"dot",(char*)"-Tpng",(char*)filename.c_str()};
+	//char* args[] = {(char*)"dot"};
 
 	/* parse command line args - minimally argv[0] sets layout engine */
-	gvParseArgs(gvc, sizeof(args)/sizeof(char*), args);
+	//gvParseArgs(gvc, sizeof(args)/sizeof(char*), args);
 
 	/* Create a simple digraph */
 	g = agopen((char*)"g", Agdirected, 0);
+
+	gvLayout(gvc, g, "dot");
 
 	// cycle throu tables
 	for(i = 0; i < tablelist->size(); i++)
@@ -149,9 +150,30 @@ void printGraph(std::vector<table> *tablelist, std::string name)
 	/* Compute a layout using layout engine from command line args */
 	gvLayoutJobs(gvc, g);
 
+	gvRenderData(gvc, g, "png", &image.image_buffer, &image.image_size);
+}
+
+image_type graph::getImage()
+{
+	return image;
+}
+
+void graph::write(std::string name, std::string format)
+{
+	std::string filename = "-odata/"+name+"."+format;
+	std::string myformat = "-T"+format;
+	// set outputfile, filetype, and graphtype
+	char* args[] = {(char*)"dot",(char*)myformat.c_str(),(char*)filename.c_str()};
+
+	/* parse command line args - minimally argv[0] sets layout engine */
+	gvParseArgs(gvc, sizeof(args)/sizeof(char*), args);
+
 	/* Write the graph according to -T and -o options */
 	gvRenderJobs(gvc, g);
+}
 
+graph::~graph()
+{
 	/* Free layout data */
 	gvFreeLayout(gvc, g);
 

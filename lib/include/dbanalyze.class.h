@@ -1,7 +1,7 @@
 #ifndef DBANALYZECLASS
 #define DBANALYZECLASS
 #include "table.class.h"
-#include "graph.h"
+#include "graph.class.h"
 #include <string>
 #include <vector>
 
