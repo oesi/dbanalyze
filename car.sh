@@ -15,17 +15,17 @@ echo '' > compilerlog
 
 #### Compile LIB ####
 ret_lib=0
-qmake lib/lib.pro && make -C lib 2>> compilerlog 1> /dev/null
+qmake lib/lib.pro -o lib/ && make -C lib 2>> compilerlog 1> /dev/null
 ret_lib=$?
 
 #### Compile CLI ####
 ret_cli=0
-qmake cli/cli.pro && make -C cli 2>> compilerlog 1> /dev/null
+qmake cli/cli.pro -o cli/ && make -C cli 2>> compilerlog 1> /dev/null
 ret_cli=$?
 
 #### Compile GUI ####
 ret_gui=0
-qmake gui/gui.pro && make -C gui 2>> compilerlog 1> /dev/null
+qmake gui/gui.pro -o gui/ && make -C gui 2>> compilerlog 1> /dev/null
 ret_gui=$?
 
 lines="`cat compilerlog | wc -l`"

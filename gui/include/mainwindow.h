@@ -40,6 +40,7 @@ public:
 	void on_infobar_response(int response);
 	void on_headerbar_button_clicked();
 	void on_drawgraph_button_clicked();
+	void on_headerbarexport_button_clicked();
 
 	dbanalyze db;
 
@@ -52,7 +53,7 @@ public:
 	Gtk::Box m_Tablebox;
 	Gtk::Paned m_HBoxTable;
 	Gtk::Box m_BoxNotebookDatabase, m_BoxChart;
-	Gtk::Button m_headerbar_button,m_ButtonConnect;
+	Gtk::Button m_headerbar_button,m_ButtonConnect,m_headerbarexport_button;
 	Gtk::HeaderBar m_header_bar;
 	Gtk::Entry m_EntryUser, m_EntryPass, m_EntryPort, m_EntryHost, m_EntryDB;
 	Gtk::Label m_Label1, m_Label2;
@@ -65,6 +66,7 @@ public:
 
 	Gtk::ButtonBox m_ButtonBox;
 	Gtk::Button m_drawgraph_button;
+	Gtk::Button m_savegraph_button;
 	Gtk::ScrolledWindow m_scrollwindowgraph;
 
 };

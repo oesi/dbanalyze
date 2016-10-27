@@ -38,14 +38,17 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 
 	// Button go-home-symbolic
 	m_headerbar_button.set_image_from_icon_name("document-open-symbolic", Gtk::ICON_SIZE_BUTTON, true);
+	m_headerbarexport_button.set_image_from_icon_name("document-save-symbolic", Gtk::ICON_SIZE_BUTTON, true);
 	m_headerbar_button.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_headerbar_button_clicked));
 	m_drawgraph_button.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_drawgraph_button_clicked));
+	m_headerbarexport_button.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_headerbarexport_button_clicked));
 	m_Dispatcher.connect(sigc::mem_fun(*this, &MainWindow::on_worker_notification));
 
 	m_header_bar.set_title("DBAnalyze");
 	m_header_bar.set_subtitle("Connect to a Database");
 	m_header_bar.set_show_close_button();
 	m_header_bar.pack_start(m_headerbar_button);
+	m_header_bar.pack_start(m_headerbarexport_button);
 
 	// Set headerbar as titlebar
 	set_titlebar(m_header_bar);
@@ -71,8 +74,9 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 
 	addDatabaseEntrys();
 
-	m_drawgraph_button.set_label("Redraw Graph");
 	m_Tablebox.pack_start(tl);
+
+	m_drawgraph_button.set_label("Redraw Graph");
 	m_Tablebox.pack_start(m_drawgraph_button,Gtk::PACK_SHRINK);
 
 	m_VBox.pack_start(m_HBoxTable);
@@ -169,6 +173,56 @@ void MainWindow::on_button_connect_clicked()
 void MainWindow::on_drawgraph_button_clicked()
 {
 	this->drawGraph();
+}
+
+void MainWindow::on_headerbarexport_button_clicked()
+{
+	Gtk::FileChooserDialog dialog("Please choose a file",
+		Gtk::FILE_CHOOSER_ACTION_SAVE);
+	dialog.set_transient_for(*this);
+
+	//Add response buttons the the dialog:
+	dialog.add_button("_Cancel", Gtk::RESPONSE_CANCEL);
+	dialog.add_button("_Save", Gtk::RESPONSE_OK);
+
+	//Show the dialog and wait for a user response:
+	int result = dialog.run();
+
+	//Handle the response:
+	switch(result)
+	{
+		case(Gtk::RESPONSE_OK):
+		{
+			std::string filename = dialog.get_filename();
+
+			std::map<std::string, std::map<std::string, std::string>> selecteditems;
+
+			// Create a vector with all selected tables
+			selecteditems = tl.getSelected();
+			std::vector<table> tablelist;
+			for(auto & i:selecteditems)
+			{
+				table *tbl = this->db.getTable(i.second["schemaname"],i.second["tablename"]);
+				if(tbl)
+					tablelist.push_back(*tbl);
+			}
+
+			// Create a graph with the selected tables
+			graph g(&tablelist);
+			g.write(filename,"pdf");
+			break;
+		}
+		case(Gtk::RESPONSE_CANCEL):
+		{
+			std::cout << "Cancel clicked." << std::endl;
+			break;
+		}
+		default:
+		{
+			std::cout << "Unexpected button clicked." << std::endl;
+			break;
+		}
+	}
 }
 
 void MainWindow::drawGraph()
