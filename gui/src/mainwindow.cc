@@ -39,9 +39,11 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 	// Button go-home-symbolic
 	m_headerbar_button.set_image_from_icon_name("document-open-symbolic", Gtk::ICON_SIZE_BUTTON, true);
 	m_headerbarexport_button.set_image_from_icon_name("document-save-symbolic", Gtk::ICON_SIZE_BUTTON, true);
+	m_statistic_button.set_image_from_icon_name("dialog-information-symbolic", Gtk::ICON_SIZE_BUTTON, true);
 	m_headerbar_button.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_headerbar_button_clicked));
 	m_drawgraph_button.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_drawgraph_button_clicked));
 	m_headerbarexport_button.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_headerbarexport_button_clicked));
+	m_statistic_button.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_statistic_button_clicked));
 	m_Dispatcher.connect(sigc::mem_fun(*this, &MainWindow::on_worker_notification));
 
 	m_header_bar.set_title("DBAnalyze");
@@ -49,6 +51,7 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 	m_header_bar.set_show_close_button();
 	m_header_bar.pack_start(m_headerbar_button);
 	m_header_bar.pack_start(m_headerbarexport_button);
+	m_header_bar.pack_start(m_statistic_button);
 
 	// Set headerbar as titlebar
 	set_titlebar(m_header_bar);
@@ -82,6 +85,7 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 	m_VBox.pack_start(m_HBoxTable);
 	m_HBoxTable.pack1(m_Tablebox);
 	m_scrollwindowgraph.add(m_image);
+	m_image.set("dbanalyze.png");
 	//Only show the scrollbars when they are necessary:
 	m_scrollwindowgraph.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
 
@@ -133,6 +137,11 @@ void MainWindow::addDatabaseEntrys()
 	m_EntryPass.set_visibility(false);
 	m_grid.add(m_EntryPass);
 
+	m_EntryPass.signal_activate().connect( sigc::mem_fun(*this,
+	&MainWindow::on_button_connect_clicked) );
+
+	m_EntryPass.grab_focus();
+
 	// Connect Button
 	m_ButtonConnect.set_label("Connect");
 	m_grid.add(m_ButtonConnect);
@@ -152,6 +161,52 @@ void MainWindow::on_headerbar_button_clicked()
 {
 	m_search_bar.set_search_mode(!m_search_bar.get_search_mode());
 }
+
+void MainWindow::on_statistic_button_clicked()
+{
+	Gtk::MessageDialog dialog(*this, "statistic");
+
+	statistic stat;
+	stat.analyze(this->db.getTablelist());
+
+	std::stringstream outmsg;
+	outmsg << "Tables without PK:" << stat.tables_without_pk.size() << std::endl;
+	for(unsigned int j = 0; j < stat.tables_without_pk.size(); j++)
+	{
+		outmsg << "\t" << stat.tables_without_pk[j]->schemaname + "." + stat.tables_without_pk[j]->tablename << std::endl;
+	}
+	outmsg << "Empty Tables:" << stat.empty_tables.size() << std::endl;
+	for(unsigned int j = 0; j < stat.empty_tables.size(); j++)
+	{
+		outmsg << "\t" << stat.empty_tables[j]->schemaname + "." + stat.empty_tables[j]->tablename << std::endl;
+	}
+
+	outmsg << "FK datatype missmatch:" << stat.fk_datatype_missmatch.size() << std::endl;
+	for(unsigned int j = 0; j < stat.fk_datatype_missmatch.size(); j++)
+	{
+		constraint_fk* fk = dynamic_cast< constraint_fk* >( stat.fk_datatype_missmatch[j] );
+		column *sourcecol = static_cast<column*>(fk->source);
+
+		outmsg << "\t" << stat.fk_datatype_missmatch[j]->constraint_schema + "." + stat.fk_datatype_missmatch[j]->constraint_name + "." + sourcecol->columnname << std::endl;
+	}
+
+	outmsg << "Number of Tables:" << stat.num_tables << std::endl;
+	outmsg << "Number of Columns: " << stat.num_columns << std::endl;
+	outmsg << "Number of FK: " << stat.num_fk << std::endl;
+	outmsg << "Number of UK: " << stat.num_uk << std::endl;
+
+	std::cout << std::endl;
+
+	outmsg << "Score: " << std::endl;
+	outmsg << "Maximum Score: " << stat.maximum_score << std::endl;
+	outmsg << "Score: " << stat.score << std::endl;
+	outmsg << "Percent: " << 100/stat.maximum_score*stat.score << std::endl;
+
+	dialog.set_secondary_text(outmsg.str());
+
+	dialog.run();
+}
+
 void MainWindow::on_button_connect_clicked()
 {
 
@@ -185,6 +240,16 @@ void MainWindow::on_headerbarexport_button_clicked()
 	dialog.add_button("_Cancel", Gtk::RESPONSE_CANCEL);
 	dialog.add_button("_Save", Gtk::RESPONSE_OK);
 
+	auto filter_pdf = Gtk::FileFilter::create();
+	filter_pdf->set_name("PDF files");
+	filter_pdf->add_mime_type("application/pdf");
+	dialog.add_filter(filter_pdf);
+
+	auto filter_png = Gtk::FileFilter::create();
+	filter_png->set_name("PNG files");
+	filter_png->add_mime_type("image/png");
+	dialog.add_filter(filter_png);
+
 	//Show the dialog and wait for a user response:
 	int result = dialog.run();
 
@@ -194,8 +259,14 @@ void MainWindow::on_headerbarexport_button_clicked()
 		case(Gtk::RESPONSE_OK):
 		{
 			std::string filename = dialog.get_filename();
-
+			auto filter = dialog.get_filter();
+			std::string format = "pdf";
 			std::map<std::string, std::map<std::string, std::string>> selecteditems;
+
+			if(filter == filter_pdf)
+				format = "pdf";
+			else if(filter == filter_png)
+				format = "png";
 
 			// Create a vector with all selected tables
 			selecteditems = tl.getSelected();
@@ -209,7 +280,7 @@ void MainWindow::on_headerbarexport_button_clicked()
 
 			// Create a graph with the selected tables
 			graph g(&tablelist);
-			g.write(filename,"pdf");
+			g.write(filename,format);
 			break;
 		}
 		case(Gtk::RESPONSE_CANCEL):
@@ -276,7 +347,10 @@ void MainWindow::drawGraph()
 		pixbuf = pixbuf->scale_simple(width/scalefactor,height/scalefactor,Gdk::INTERP_BILINEAR);
 	}
 
-	m_image.set(pixbuf);
+	if(selecteditems.size() == 0)
+		m_image.set("dbanalyze.png");
+	else
+		m_image.set(pixbuf);
 }
 
 MainWindow::~MainWindow()

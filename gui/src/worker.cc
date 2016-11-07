@@ -63,12 +63,12 @@ void Worker::do_work(void* caller)
 		mw->db.loadData(false);
 		m_message = "Data loaded!";
 
-		mw->notify();
 	}
 	else
 	{
 		m_message = "Failed!";
-		mw->notify();
 	}
+	
 	m_has_stopped = true;
+	mw->notify();
 }

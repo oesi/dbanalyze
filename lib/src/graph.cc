@@ -160,7 +160,7 @@ image_type graph::getImage()
 
 void graph::write(std::string name, std::string format)
 {
-	std::string filename = "-o"+name+"."+format;
+	std::string filename = "-o"+name;
 	std::string myformat = "-T"+format;
 	// set outputfile, filetype, and graphtype
 	char* args[] = {(char*)"dot",(char*)myformat.c_str(),(char*)filename.c_str()};
