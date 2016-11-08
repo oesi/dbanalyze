@@ -13,8 +13,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-#include "mainwindow.h"
-#include "tablelist.h"
+#include "mainwindow.class.h"
+#include "tablelist.class.h"
 #include "graph.class.h"
 #include <iostream>
 #include <string>
@@ -27,7 +27,8 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 : 	tl(this),
 	m_VBox(Gtk::ORIENTATION_VERTICAL, 6),
 	m_Tablebox(Gtk::ORIENTATION_VERTICAL),
-	m_HBoxTable(Gtk::ORIENTATION_HORIZONTAL)
+	m_HBoxTable(Gtk::ORIENTATION_HORIZONTAL),
+	clutterstage(this)
 {
 	// Cast app to void to remove compiler warning
 	(void) app;
@@ -89,7 +90,10 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 	//Only show the scrollbars when they are necessary:
 	m_scrollwindowgraph.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
 
-	m_HBoxTable.pack2(m_scrollwindowgraph);
+	m_Notebook.append_page(m_scrollwindowgraph, "Graph");
+	m_Notebook.append_page(clutterstage, "ClutterStage");
+	m_Notebook.set_scrollable();
+	m_HBoxTable.pack2(m_Notebook);
 	m_HBoxTable.set_position(250);
 
 	show_all_children();
@@ -232,6 +236,9 @@ void MainWindow::on_drawgraph_button_clicked()
 
 void MainWindow::on_headerbarexport_button_clicked()
 {
+
+	int page = m_Notebook.get_current_page();
+
 	Gtk::FileChooserDialog dialog("Please choose a file",
 		Gtk::FILE_CHOOSER_ACTION_SAVE);
 	dialog.set_transient_for(*this);
@@ -241,9 +248,12 @@ void MainWindow::on_headerbarexport_button_clicked()
 	dialog.add_button("_Save", Gtk::RESPONSE_OK);
 
 	auto filter_pdf = Gtk::FileFilter::create();
-	filter_pdf->set_name("PDF files");
-	filter_pdf->add_mime_type("application/pdf");
-	dialog.add_filter(filter_pdf);
+	if(page==0)
+	{
+		filter_pdf->set_name("PDF files");
+		filter_pdf->add_mime_type("application/pdf");
+		dialog.add_filter(filter_pdf);
+	}
 
 	auto filter_png = Gtk::FileFilter::create();
 	filter_png->set_name("PNG files");
@@ -258,30 +268,38 @@ void MainWindow::on_headerbarexport_button_clicked()
 	{
 		case(Gtk::RESPONSE_OK):
 		{
+
 			std::string filename = dialog.get_filename();
 			auto filter = dialog.get_filter();
 			std::string format = "pdf";
 			std::map<std::string, std::map<std::string, std::string>> selecteditems;
+
 
 			if(filter == filter_pdf)
 				format = "pdf";
 			else if(filter == filter_png)
 				format = "png";
 
-			// Create a vector with all selected tables
-			selecteditems = tl.getSelected();
-			std::vector<table> tablelist;
-			for(auto & i:selecteditems)
+			if(page==0)
 			{
-				table *tbl = this->db.getTable(i.second["schemaname"],i.second["tablename"]);
-				if(tbl)
-					tablelist.push_back(*tbl);
-			}
+				// Create a vector with all selected tables
+				selecteditems = tl.getSelected();
+				std::vector<table> tablelist;
+				for(auto & i:selecteditems)
+				{
+					table *tbl = this->db.getTable(i.second["schemaname"],i.second["tablename"]);
+					if(tbl)
+						tablelist.push_back(*tbl);
+				}
 
-			// Create a graph with the selected tables
-			graph g(&tablelist);
-			g.write(filename,format);
-			break;
+				// Create a graph with the selected tables
+				graph g(&tablelist);
+				g.write(filename,format);
+				break;
+			}
+			else
+				clutterstage.export_graph(filename, format);
+
 		}
 		case(Gtk::RESPONSE_CANCEL):
 		{
@@ -351,6 +369,9 @@ void MainWindow::drawGraph()
 		m_image.set("dbanalyze.png");
 	else
 		m_image.set(pixbuf);
+
+	// Draw clutter Stage
+	clutterstage.draw(&tablelist);
 }
 
 MainWindow::~MainWindow()

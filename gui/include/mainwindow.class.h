@@ -17,8 +17,9 @@
 #define DBA_MAINWINDOW_H
 
 #include "dbanalyze.h"
-#include "worker.h"
-#include "tablelist.h"
+#include "worker.class.h"
+#include "tablelist.class.h"
+#include "dbaclutter.class.h"
 #include <gtkmm.h>
 #include <iostream>
 
@@ -70,6 +71,8 @@ public:
 	Gtk::Button m_drawgraph_button;
 	Gtk::Button m_savegraph_button;
 	Gtk::ScrolledWindow m_scrollwindowgraph;
+	Gtk::Notebook m_Notebook;
+	dbaclutter clutterstage;
 
 };
 

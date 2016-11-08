@@ -16,8 +16,8 @@
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
-#include "tablelist.h"
-#include "mainwindow.h"
+#include "tablelist.class.h"
+#include "mainwindow.class.h"
 #define DBANALYZE_CONFIG_MAX_DEFAULT_SELECTED_ITEMS 5
 using std::sprintf;
 using std::strtol;

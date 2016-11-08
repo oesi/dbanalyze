@@ -12,6 +12,8 @@ CONFIG += link_pkgconfig
 
 PKGCONFIG += gtkmm-3.0
 #PKGCONFIG += libgda-5.0
+PKGCONFIG += clutter-1.0
+PKGCONFIG += clutter-gtk-1.0
 
 CXXFLAGS += -Wall
 CXX = g++

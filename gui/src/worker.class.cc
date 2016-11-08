@@ -14,8 +14,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "worker.h"
-#include "mainwindow.h"
+#include "worker.class.h"
+#include "mainwindow.class.h"
 #include <sstream>
 #include <chrono>
 
@@ -68,7 +68,7 @@ void Worker::do_work(void* caller)
 	{
 		m_message = "Failed!";
 	}
-	
+
 	m_has_stopped = true;
 	mw->notify();
 }

@@ -6,20 +6,36 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-#include "mainwindow.class.h"
-#include <gtkmm/application.h>
+#ifndef DBA_CLUTTER_H
+#define DBA_CLUTTER_H
 
-int main(int argc, char *argv[])
+#include <gtkmm.h>
+#include <clutter/clutter.h>
+#include <clutter-gtk/clutter-gtk.h>
+#include "table.class.h"
+
+class dbaclutter : public Gtk::ScrolledWindow
 {
-	auto app = Gtk::Application::create(argc, argv, "org.oesi.dbanalyze");
-	MainWindow window(app);
+public:
+	dbaclutter(void *mw);
+	virtual ~dbaclutter();
+	void draw(std::vector<table> *tablelist);
 
-	return app->run(window);
-}
+	void drawtable(table *tbl);
+	void export_graph(std::string filename, std::string format);
+
+protected:
+	void *mw;
+	GtkWidget *clutter0;
+	ClutterActor *stage;
+	Glib::RefPtr<Gdk::Pixbuf> pixbuf;
+};
+
+#endif //DBA_CLUTTER_H
