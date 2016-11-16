@@ -45,6 +45,7 @@ protected:
 	GtkWidget *clutter0;
 	ClutterActor *stage;
 	Glib::RefPtr<Gdk::Pixbuf> pixbuf;
+	gfloat last_x_position, last_y_position, next_x_position;
 
 //private:
 	//static void on_actor_dragmotion (ClutterDragAction *action,ClutterActor *actor,gfloat delta_x,gfloat delta_y,gpointer user_data);

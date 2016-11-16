@@ -18,6 +18,7 @@
 #include <cstdlib>
 #include "tablelist.class.h"
 #include "mainwindow.class.h"
+#include <exception>
 #define DBANALYZE_CONFIG_MAX_DEFAULT_SELECTED_ITEMS 5
 using std::sprintf;
 using std::strtol;
@@ -34,7 +35,7 @@ tablelist::tablelist(void *mw)
 	set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
 
 	//Create the Tree model:
-	m_refTreeModel = Gtk::ListStore::create(m_Columns);
+	m_refTreeModel = Gtk::TreeStore::create(m_Columns);
 	m_TreeView.set_model(m_refTreeModel);
 
 	int cols_count =m_TreeView.append_column_editable("Select", m_Columns.m_col_selected);
@@ -51,8 +52,39 @@ tablelist::tablelist(void *mw)
 	m_TreeView.append_column("Schema", m_Columns.m_col_schemaname);
 }
 
-void tablelist::on_select_toggled(Glib::ustring)
+void tablelist::on_select_toggled(Glib::ustring path)
 {
+	// if clicked on schema -> select/unselect tables
+	typedef Gtk::TreeModel::Children type_children;
+	type_children children_schema = m_refTreeModel->children();
+	for(type_children::iterator iter = children_schema.begin();iter != children_schema.end(); ++iter)
+	{
+		Gtk::TreeModel::Row row = *iter;
+
+		Gtk::TreePath treepath;
+		treepath = m_refTreeModel->get_path(row);
+		if(path == treepath.to_string())
+		{
+			if(row[m_Columns.m_col_selected])
+			{
+				type_children children_tables = row->children();
+				for(type_children::iterator itertable = children_tables.begin();itertable != children_tables.end(); ++itertable)
+				{
+					Gtk::TreeModel::Row row_table = *itertable;
+					row_table[m_Columns.m_col_selected]=true;
+				}
+			}
+			else
+			{
+				type_children children_tables = row->children();
+				for(type_children::iterator itertable = children_tables.begin();itertable != children_tables.end(); ++itertable)
+				{
+					Gtk::TreeModel::Row row_table = *itertable;
+					row_table[m_Columns.m_col_selected]=false;
+				}
+			}
+		}
+	}
 	MainWindow *mw = static_cast<MainWindow*>(this->mw);
 	mw->drawGraph();
 }
@@ -61,11 +93,23 @@ void tablelist::fillTable(std::vector<table>* tables)
 {
 	// Remove old Items from Table
 	m_refTreeModel->clear();
+	std::map<std::string, Gtk::TreeModel::Row> schema;
 
 	for(unsigned int i=0; i < tables->size(); i++)
 	{
+		Gtk::TreeModel::Row row_schema;
+		if(schema[tables->at(i).schemaname]==NULL)
+		{
+			// Create Schema Entry
+			row_schema = *(m_refTreeModel->append());
+			row_schema[m_Columns.m_col_tablename] = tables->at(i).schemaname;
+			row_schema[m_Columns.m_col_schemaname] = "";
+			row_schema[m_Columns.m_col_selected] = false;
+			schema[tables->at(i).schemaname] = row_schema;
+		}
+
 		//Fill the TreeView's model
-		Gtk::TreeModel::Row row = *(m_refTreeModel->append());
+		Gtk::TreeModel::Row row = *(m_refTreeModel->append(schema[tables->at(i).schemaname].children()));
 		row[m_Columns.m_col_tablename] = tables->at(i).tablename;
 		row[m_Columns.m_col_schemaname] = tables->at(i).schemaname;
 
@@ -81,19 +125,25 @@ std::map<std::string, std::map<std::string, std::string>> tablelist::getSelected
 {
 	std::map<std::string, std::map<std::string, std::string>> selecteditems;
 
-	typedef Gtk::TreeModel::Children type_children; //minimise code length.
-	type_children children = m_refTreeModel->children();
-	for(type_children::iterator iter = children.begin();iter != children.end(); ++iter)
+	typedef Gtk::TreeModel::Children type_children;
+	type_children children_schema = m_refTreeModel->children();
+	for(type_children::iterator iter = children_schema.begin();iter != children_schema.end(); ++iter)
 	{
-		Gtk::TreeModel::Row row = *iter;
-		if(row[m_Columns.m_col_selected])
-		{
-			Glib::ustring schema = row[m_Columns.m_col_schemaname];
-			Glib::ustring table = row[m_Columns.m_col_tablename];
-			std::string key = schema+"_"+table;
+		Gtk::TreeModel::Row row_schema = *iter;
+		type_children children_tables = row_schema->children();
 
-			selecteditems[key]["tablename"]=table;
-			selecteditems[key]["schemaname"]=schema;
+		for(type_children::iterator itertable = children_tables.begin();itertable != children_tables.end(); ++itertable)
+		{
+			Gtk::TreeModel::Row row_table = *itertable;
+			if(row_table[m_Columns.m_col_selected])
+			{
+				Glib::ustring schema = row_table[m_Columns.m_col_schemaname];
+				Glib::ustring table = row_table[m_Columns.m_col_tablename];
+				std::string key = schema+"_"+table;
+
+				selecteditems[key]["tablename"]=table;
+				selecteditems[key]["schemaname"]=schema;
+			}
 		}
 	}
 	return selecteditems;

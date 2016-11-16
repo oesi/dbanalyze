@@ -1,8 +1,8 @@
 #include "dbaclutter.class.h"
 #include "constraint_fk.class.h"
+#include "colorgenerator.class.h"
 #include <iostream>
 #include <gtkmm.h>
-
 
 void on_actor_dragmotion (ClutterDragAction* /*action*/,
 	ClutterActor *actor,
@@ -65,6 +65,9 @@ dbaclutter::dbaclutter(void* mw)
 	Gtk::Widget *mmclutter = Glib::wrap(clutter0);
 	this->add(*mmclutter);
 	stage = gtk_clutter_embed_get_stage (GTK_CLUTTER_EMBED (clutter0));
+	last_x_position=10;
+	last_y_position=10;
+	next_x_position=10;
 }
 
 dbaclutter::~dbaclutter()
@@ -146,7 +149,7 @@ void dbaclutter::drawtable(table *tbl)
 	clutter_actor_set_layout_manager (box, box_layout);
 	ClutterColor box_color = { 56, 147, 254, 255 };
 	clutter_actor_set_background_color (box, &box_color);
-	clutter_actor_set_position (box, 50/*x*/, 60/*y*/);
+	//clutter_actor_set_position (box, 50/*x*/, 60/*y*/);
 	clutter_actor_set_reactive(box, true);
 	clutter_actor_add_child(stage, box);
 
@@ -207,8 +210,39 @@ void dbaclutter::drawtable(table *tbl)
 	clutter_actor_add_action(box, dragaction);
 	g_signal_connect (dragaction, "drag-motion", G_CALLBACK (on_actor_dragmotion), this);
 
-	//m_drawgraph_button.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_drawgraph_button_clicked));
+	clutter_actor_set_position (box, last_x_position, last_y_position);
 
+	// calculate position for next actor
+	gfloat width, height;
+	clutter_actor_get_size(box, &width, &height);
+
+	gfloat x_position=0, y_position=0;
+	gfloat stage_width, stage_height;
+	clutter_actor_get_size(stage, &stage_width, &stage_height);
+	x_position = last_x_position;
+
+	if(x_position + width + 10.0 > next_x_position)
+	{
+		next_x_position = x_position + width + 10.0;
+		if(next_x_position > stage_width)
+		{
+			next_x_position=10.0;
+		}
+	}
+	else
+	{
+		last_x_position = x_position;
+	}
+
+	if(last_y_position + height + 10.0 > stage_height)
+	{
+		y_position = 10;
+		last_x_position = next_x_position;
+	}
+	else
+		y_position = last_y_position + height + 10.0;
+
+	last_y_position = y_position;
 }
 
 void dbaclutter::export_graph(std::string filename, std::string format)
@@ -244,15 +278,20 @@ void dbaclutter::drawLine(std::string name, ClutterActor *actor1, ClutterActor *
 
 	get_line_position(actor1, actor2, &x, &y, &len, &angle);
 
+	colorgenerator colorobj(name);
 	ClutterActor *myline = clutter_actor_new ();
-	ClutterColor myLineColor = { 255, 0, 0, 255 };
+	ClutterColor myLineColor = { (guint8)colorobj.r, (guint8)colorobj.g, (guint8)colorobj.b, 255 };
 	clutter_actor_set_background_color(myline, &myLineColor);
 	clutter_actor_add_child(parent, myline);
 	clutter_actor_set_position(myline, x, y);
-	clutter_actor_set_size(myline, len, 1);
+	clutter_actor_set_size(myline, len, 2);
 	clutter_actor_set_rotation_angle (myline, CLUTTER_Z_AXIS, angle);
 
 	clutter_actor_set_name(myline, name.c_str());
+
+	// Move Tables to foreground
+	clutter_actor_set_child_above_sibling(parent,actor1,NULL);
+	clutter_actor_set_child_above_sibling(parent,actor2,NULL);
 }
 
 void dbaclutter::redrawLine(ClutterActor *line, ClutterActor *actor1, ClutterActor *actor2)
@@ -262,7 +301,7 @@ void dbaclutter::redrawLine(ClutterActor *line, ClutterActor *actor1, ClutterAct
 	get_line_position(actor1, actor2, &x, &y, &len, &angle);
 
 	clutter_actor_set_position(line, x, y);
-	clutter_actor_set_size(line, len, 1);
+	clutter_actor_set_size(line, len, 2);
 	clutter_actor_set_rotation_angle (line, CLUTTER_Z_AXIS, angle);
 }
 
@@ -339,9 +378,11 @@ void dbaclutter::helper_clutter_actor_get_center_position(ClutterActor *actor, f
 	float sizeX, sizeY;
 	float posX, posY;
 
-	clutter_actor_get_size(actor, &sizeX, &sizeY);
-	clutter_actor_get_position(actor, &posX, &posY);
-
+	if(actor)
+	{
+		clutter_actor_get_size(actor, &sizeX, &sizeY);
+		clutter_actor_get_position(actor, &posX, &posY);
+	}
 	*x = posX + (sizeX/2);
 	*y = posY + (sizeY/2);
 }

@@ -5,11 +5,11 @@
 #include <sstream>
 #include <algorithm>
 #include <iomanip>
-
+#include "colorgenerator.class.h"
 /**
  * Create a Color from a string
  */
-std::string StringToColor(std::string value)
+colorgenerator::colorgenerator(std::string value)
 {
 	int hash = 0;
 	for(unsigned int i=0; i < value.length(); i++)
@@ -17,9 +17,9 @@ std::string StringToColor(std::string value)
 		hash = value[i] + ((hash << 5) - hash);
 	}
 
-	int r = (hash & 0xFF0000) >> 16;
-	int g = (hash & 0x00FF00) >> 8;
-	int b = (hash & 0x0000FF);
+	r = (hash & 0xFF0000) >> 16;
+	g = (hash & 0x00FF00) >> 8;
+	b = (hash & 0x0000FF);
 
 	std::stringstream rgb;
 	rgb << "#";
@@ -27,5 +27,6 @@ std::string StringToColor(std::string value)
 	rgb << r;
 	rgb << g;
 	rgb << b;
-	return rgb.str();
+
+	this->hex = rgb.str();
 }

@@ -1,7 +1,7 @@
 #include "table.class.h"
 #include "graph.class.h"
 #include "constraint_fk.class.h"
-#include "utils.h"
+#include "colorgenerator.class.h"
 #include <map>
 #include <algorithm>
 #include <graphviz/gvc.h>
@@ -115,9 +115,8 @@ graph::graph(std::vector<table> *tablelist)
 						agsafeset(e,(char*)"tailport",(char*)source->columnname.c_str(),(char*)"");
 
 						// set color of edge
-						std::string color;
-						color = StringToColor(tbl->constraintlist[j]->constraint_name);
-						agsafeset(e,(char*)"color",(char*)color.c_str(),(char*)"");
+						colorgenerator colorobj(tbl->constraintlist[j]->constraint_name);
+						agsafeset(e,(char*)"color",(char*) colorobj.hex.c_str(),(char*)"");
 
 						edgelist.push_back(e);
 					}

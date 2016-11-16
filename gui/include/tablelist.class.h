@@ -57,7 +57,7 @@ protected:
 	Gtk::Box m_VBox;
 	Gtk::ScrolledWindow m_ScrolledWindow;
 	Gtk::TreeView m_TreeView;
-	Glib::RefPtr<Gtk::ListStore> m_refTreeModel;
+	Glib::RefPtr<Gtk::TreeStore> m_refTreeModel;
 };
 
 #endif //DBA_tablelist_H

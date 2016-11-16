@@ -59,10 +59,10 @@ public:
 	Gtk::Button m_statistic_button;
 	Gtk::HeaderBar m_header_bar;
 	Gtk::Entry m_EntryUser, m_EntryPass, m_EntryPort, m_EntryHost, m_EntryDB;
-	Gtk::Label m_Label1, m_Label2;
+	//Gtk::Label m_Label1, m_Label2;
 	Gtk::ComboBoxText m_ComboDbtype;
 	Gtk::Grid m_grid;
-	Glib::RefPtr<Gtk::Builder> m_refBuilder;
+	//Glib::RefPtr<Gtk::Builder> m_refBuilder;
 	Gtk::InfoBar m_InfoBar;
 	Gtk::Label m_Message_Label;
 	Gtk::Image m_image;
