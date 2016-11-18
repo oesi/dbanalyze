@@ -149,7 +149,6 @@ void dbaclutter::drawtable(table *tbl)
 	clutter_actor_set_layout_manager (box, box_layout);
 	ClutterColor box_color = { 56, 147, 254, 255 };
 	clutter_actor_set_background_color (box, &box_color);
-	//clutter_actor_set_position (box, 50/*x*/, 60/*y*/);
 	clutter_actor_set_reactive(box, true);
 	clutter_actor_add_child(stage, box);
 

@@ -13,16 +13,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-
 #include "worker.class.h"
 #include "mainwindow.class.h"
 #include <sstream>
 #include <chrono>
 
 Worker::Worker() :
-  m_Mutex(),
-  m_has_stopped(false),
-  m_message()
+	m_Mutex(),
+	m_has_stopped(false),
+	m_message()
 {
 }
 
@@ -48,7 +47,7 @@ void Worker::do_work(void* caller)
 	m_message = "Connecting...";
 	mw->notify();
 
-	std::string type = mw->m_ComboDbtype.get_active_text();
+	std::string type = mw->m_ComboBoxTextDbtype.get_active_text();
 	std::string host = mw->m_EntryHost.get_text();
 	std::string dbname = mw->m_EntryDB.get_text();
 	int port = std::stoi(mw->m_EntryPort.get_text());

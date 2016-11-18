@@ -29,51 +29,48 @@ public:
 	MainWindow(const Glib::RefPtr<Gtk::Application>& app);
 	virtual ~MainWindow();
 	void drawGraph();
-
 	void notify();
 	void on_worker_notification();
+	void addDatabaseEntrys();
+	void on_button_connect_clicked();
+	void on_infobar_response(int response);
+	void on_headerbarconnect_button_clicked();
+	void on_headerbarexport_button_clicked();
+	void on_redraw_button_clicked();
+	void on_statistic_button_clicked();
+
+	dbanalyze db;
+	tablelist tl;
+	dbaclutter clutterstage;
 	Glib::Dispatcher m_Dispatcher;
 	std::thread* m_WorkerThread;
 	Worker m_Worker;
 
-	void addDatabaseEntrys();
-	void on_button_connect_clicked();
-	void on_infobar_response(int response);
-	void on_headerbar_button_clicked();
-	void on_drawgraph_button_clicked();
-	void on_headerbarexport_button_clicked();
-	void on_statistic_button_clicked();
-
-	dbanalyze db;
-
-	tablelist tl;
-
-	//Child widgets:
-	Gtk::SearchBar m_search_bar;
-	Gtk::Box m_searchbarbox;
-	Gtk::Box m_VBox;
-	Gtk::Box m_Tablebox;
-	Gtk::Paned m_HBoxTable;
-	Gtk::Box m_BoxNotebookDatabase, m_BoxChart;
-	Gtk::Button m_headerbar_button,m_ButtonConnect,m_headerbarexport_button;
-	Gtk::Button m_statistic_button;
-	Gtk::HeaderBar m_header_bar;
-	Gtk::Entry m_EntryUser, m_EntryPass, m_EntryPort, m_EntryHost, m_EntryDB;
-	//Gtk::Label m_Label1, m_Label2;
-	Gtk::ComboBoxText m_ComboDbtype;
-	Gtk::Grid m_grid;
-	//Glib::RefPtr<Gtk::Builder> m_refBuilder;
+	Gtk::SearchBar m_SearchBarConnection;
+	Gtk::Box m_BoxConnection;
+	Gtk::Box m_VBoxMain;
+	Gtk::Box m_BoxTable;
+	Gtk::Box m_BoxNotebookDatabase;
+	Gtk::Box m_BoxChart;
+	Gtk::Paned m_PanedMain;
+	Gtk::Button m_ButtonHeaderbarConnect;
+	Gtk::Button m_ButtonHeaderbarExport;
+	Gtk::Button m_ButtonHeaderbarStatistic;
+	Gtk::Button m_ButtonConnect;
+	Gtk::Button m_ButtonRedraw;
+	Gtk::HeaderBar m_HeaderBar;
+	Gtk::Entry m_EntryUser;
+	Gtk::Entry m_EntryPass;
+	Gtk::Entry m_EntryPort;
+	Gtk::Entry m_EntryHost;
+	Gtk::Entry m_EntryDB;
+	Gtk::ComboBoxText m_ComboBoxTextDbtype;
+	Gtk::Grid m_GridConnect;
 	Gtk::InfoBar m_InfoBar;
-	Gtk::Label m_Message_Label;
-	Gtk::Image m_image;
-
-	Gtk::ButtonBox m_ButtonBox;
-	Gtk::Button m_drawgraph_button;
-	Gtk::Button m_savegraph_button;
-	Gtk::ScrolledWindow m_scrollwindowgraph;
+	Gtk::Label m_LabelInfobar;
+	Gtk::Image m_Image;
+	Gtk::ScrolledWindow m_ScrollWindowGraph;
 	Gtk::Notebook m_Notebook;
-	dbaclutter clutterstage;
-
 };
 
 #endif

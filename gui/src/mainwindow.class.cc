@@ -25,10 +25,10 @@
 
 MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 : 	tl(this),
-	m_VBox(Gtk::ORIENTATION_VERTICAL, 6),
-	m_Tablebox(Gtk::ORIENTATION_VERTICAL),
-	m_HBoxTable(Gtk::ORIENTATION_HORIZONTAL),
-	clutterstage(this)
+	clutterstage(this),
+	m_VBoxMain(Gtk::ORIENTATION_VERTICAL, 6),
+	m_BoxTable(Gtk::ORIENTATION_VERTICAL),
+	m_PanedMain(Gtk::ORIENTATION_HORIZONTAL)
 {
 	// Cast app to void to remove compiler warning
 	(void) app;
@@ -37,133 +37,125 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 	set_title("DBAnalyze");
 	set_size_request(800, 600);
 
-	// Button go-home-symbolic
-	m_headerbar_button.set_image_from_icon_name("document-open-symbolic", Gtk::ICON_SIZE_BUTTON, true);
-	m_headerbarexport_button.set_image_from_icon_name("document-save-symbolic", Gtk::ICON_SIZE_BUTTON, true);
-	m_statistic_button.set_image_from_icon_name("dialog-information-symbolic", Gtk::ICON_SIZE_BUTTON, true);
-	m_headerbar_button.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_headerbar_button_clicked));
-	m_drawgraph_button.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_drawgraph_button_clicked));
-	m_headerbarexport_button.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_headerbarexport_button_clicked));
-	m_statistic_button.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_statistic_button_clicked));
+	m_ButtonHeaderbarConnect.set_image_from_icon_name("document-open-symbolic", Gtk::ICON_SIZE_BUTTON, true);
+	m_ButtonHeaderbarExport.set_image_from_icon_name("document-save-symbolic", Gtk::ICON_SIZE_BUTTON, true);
+	m_ButtonHeaderbarStatistic.set_image_from_icon_name("dialog-information-symbolic", Gtk::ICON_SIZE_BUTTON, true);
+	m_ButtonHeaderbarConnect.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_headerbarconnect_button_clicked));
+	m_ButtonHeaderbarExport.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_headerbarexport_button_clicked));
+	m_ButtonHeaderbarStatistic.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_statistic_button_clicked));
+	m_ButtonRedraw.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_redraw_button_clicked));
 	m_Dispatcher.connect(sigc::mem_fun(*this, &MainWindow::on_worker_notification));
 
-	m_header_bar.set_title("DBAnalyze");
-	m_header_bar.set_subtitle("Connect to a Database");
-	m_header_bar.set_show_close_button();
-	m_header_bar.pack_start(m_headerbar_button);
-	m_header_bar.pack_start(m_headerbarexport_button);
-	m_header_bar.pack_start(m_statistic_button);
+	m_HeaderBar.set_title("DBAnalyze");
+	m_HeaderBar.set_subtitle("Connect to a Database");
+	m_HeaderBar.set_show_close_button();
+	m_HeaderBar.pack_start(m_ButtonHeaderbarConnect);
+	m_HeaderBar.pack_start(m_ButtonHeaderbarExport);
+	m_HeaderBar.pack_start(m_ButtonHeaderbarStatistic);
 
 	// Set headerbar as titlebar
-	set_titlebar(m_header_bar);
+	set_titlebar(m_HeaderBar);
 
-	add(m_VBox);
+	add(m_VBoxMain);
 
 	// Add the message label to the InfoBar:
-	auto infoBarContainer =
-		dynamic_cast<Gtk::Container*>(m_InfoBar.get_content_area());
+	auto infoBarContainer = dynamic_cast<Gtk::Container*>(m_InfoBar.get_content_area());
 	if (infoBarContainer)
-		infoBarContainer->add(m_Message_Label);
+		infoBarContainer->add(m_LabelInfobar);
 
 	// Connect signals:
-	m_InfoBar.signal_response().connect(sigc::mem_fun(*this,
-		&MainWindow::on_infobar_response) );
+	m_InfoBar.signal_response().connect(sigc::mem_fun(*this, &MainWindow::on_infobar_response));
 
 	// Add an ok button to the InfoBar:
 	m_InfoBar.add_button("_OK", 0);
 
-	// Add the InfoBar to the vbox:
-	m_VBox.pack_start(m_InfoBar, Gtk::PACK_SHRINK);
-	m_VBox.pack_start(m_search_bar, Gtk::PACK_SHRINK);
+	m_VBoxMain.pack_start(m_InfoBar, Gtk::PACK_SHRINK);
+	m_VBoxMain.pack_start(m_SearchBarConnection, Gtk::PACK_SHRINK);
 
 	addDatabaseEntrys();
 
-	m_Tablebox.pack_start(tl);
+	m_BoxTable.pack_start(tl);
 
-	m_drawgraph_button.set_label("Redraw Graph");
-	m_Tablebox.pack_start(m_drawgraph_button,Gtk::PACK_SHRINK);
+	m_ButtonRedraw.set_label("Redraw Graph");
+	m_BoxTable.pack_start(m_ButtonRedraw,Gtk::PACK_SHRINK);
 
-	m_VBox.pack_start(m_HBoxTable);
-	m_HBoxTable.pack1(m_Tablebox);
-	m_scrollwindowgraph.add(m_image);
-	m_image.set("dbanalyze.png");
+	m_VBoxMain.pack_start(m_PanedMain);
+	m_PanedMain.pack1(m_BoxTable);
+	m_ScrollWindowGraph.add(m_Image);
+	m_Image.set("dbanalyze.png");
 	//Only show the scrollbars when they are necessary:
-	m_scrollwindowgraph.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
+	m_ScrollWindowGraph.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
 
-	m_Notebook.append_page(m_scrollwindowgraph, "Graph");
+	m_Notebook.append_page(m_ScrollWindowGraph, "Graph");
 	m_Notebook.append_page(clutterstage, "ClutterStage");
 	m_Notebook.set_scrollable();
-	m_HBoxTable.pack2(m_Notebook);
-	m_HBoxTable.set_position(250);
+	m_PanedMain.pack2(m_Notebook);
+	m_PanedMain.set_position(250);
 
 	show_all_children();
 	m_InfoBar.hide();
-
 }
 
 void MainWindow::addDatabaseEntrys()
 {
-	m_search_bar.add(m_searchbarbox);
-	m_searchbarbox.pack_start(m_grid,Gtk::PACK_SHRINK);
-	m_search_bar.set_search_mode(true);
+	m_SearchBarConnection.add(m_BoxConnection);
+	m_BoxConnection.pack_start(m_GridConnect,Gtk::PACK_SHRINK);
+	m_SearchBarConnection.set_search_mode(true);
 
 	// Type
-	m_ComboDbtype.append("PostgreSQL");
-	m_ComboDbtype.append("SQLite");
-	m_ComboDbtype.append("MySQL");
-	m_ComboDbtype.append("MSAccess");
-	m_ComboDbtype.set_active(0);
-	m_grid.add(m_ComboDbtype);
+	m_ComboBoxTextDbtype.append("PostgreSQL");
+	m_ComboBoxTextDbtype.append("SQLite");
+	m_ComboBoxTextDbtype.append("MySQL");
+	m_ComboBoxTextDbtype.append("MSAccess");
+	m_ComboBoxTextDbtype.set_active(0);
+	m_GridConnect.add(m_ComboBoxTextDbtype);
 
 	// Host
 	m_EntryHost.set_max_length(50);
 	m_EntryHost.set_text("localhost");
-	m_grid.add(m_EntryHost);
+	m_GridConnect.add(m_EntryHost);
 
 	// Port
 	m_EntryPort.set_max_length(50);
 	m_EntryPort.set_text("5433");
-	m_grid.add(m_EntryPort);
+	m_GridConnect.add(m_EntryPort);
 
 	// DB
 	m_EntryDB.set_max_length(50);
 	m_EntryDB.set_text("analyzetest");
-	m_grid.add(m_EntryDB);
+	m_GridConnect.add(m_EntryDB);
 
 	// User
 	m_EntryUser.set_max_length(50);
 	m_EntryUser.set_text("dbanalyze");
-	m_grid.add(m_EntryUser);
+	m_GridConnect.add(m_EntryUser);
 
 	// Pass
 	m_EntryPass.set_max_length(50);
 	m_EntryPass.set_text("dbanalyze");
 	m_EntryPass.set_visibility(false);
-	m_grid.add(m_EntryPass);
+	m_GridConnect.add(m_EntryPass);
 
-	m_EntryPass.signal_activate().connect( sigc::mem_fun(*this,
-	&MainWindow::on_button_connect_clicked) );
+	m_EntryPass.signal_activate().connect( sigc::mem_fun(*this, &MainWindow::on_button_connect_clicked) );
 
 	m_EntryPass.grab_focus();
 
 	// Connect Button
 	m_ButtonConnect.set_label("Connect");
-	m_grid.add(m_ButtonConnect);
+	m_GridConnect.add(m_ButtonConnect);
 
-	m_ButtonConnect.signal_clicked().connect( sigc::mem_fun(*this,
-		&MainWindow::on_button_connect_clicked) );
+	m_ButtonConnect.signal_clicked().connect( sigc::mem_fun(*this, &MainWindow::on_button_connect_clicked) );
 }
 
 void MainWindow::on_infobar_response(int)
 {
-	// Clear the message and hide the info bar:
-	m_Message_Label.set_text("");
+	m_LabelInfobar.set_text("");
 	m_InfoBar.hide();
 }
 
-void MainWindow::on_headerbar_button_clicked()
+void MainWindow::on_headerbarconnect_button_clicked()
 {
-	m_search_bar.set_search_mode(!m_search_bar.get_search_mode());
+	m_SearchBarConnection.set_search_mode(!m_SearchBarConnection.get_search_mode());
 }
 
 void MainWindow::on_statistic_button_clicked()
@@ -213,7 +205,6 @@ void MainWindow::on_statistic_button_clicked()
 
 void MainWindow::on_button_connect_clicked()
 {
-
 	if (m_WorkerThread)
 	{
 		std::cout << "Can't start a worker thread while another one is running." << std::endl;
@@ -229,18 +220,16 @@ void MainWindow::on_button_connect_clicked()
 	}
 }
 
-void MainWindow::on_drawgraph_button_clicked()
+void MainWindow::on_redraw_button_clicked()
 {
 	this->drawGraph();
 }
 
 void MainWindow::on_headerbarexport_button_clicked()
 {
-
 	int page = m_Notebook.get_current_page();
 
-	Gtk::FileChooserDialog dialog("Please choose a file",
-		Gtk::FILE_CHOOSER_ACTION_SAVE);
+	Gtk::FileChooserDialog dialog("Please choose a file", Gtk::FILE_CHOOSER_ACTION_SAVE);
 	dialog.set_transient_for(*this);
 
 	//Add response buttons the the dialog:
@@ -268,12 +257,10 @@ void MainWindow::on_headerbarexport_button_clicked()
 	{
 		case(Gtk::RESPONSE_OK):
 		{
-
 			std::string filename = dialog.get_filename();
 			auto filter = dialog.get_filter();
 			std::string format = "pdf";
 			std::map<std::string, std::map<std::string, std::string>> selecteditems;
-
 
 			if(filter == filter_pdf)
 				format = "pdf";
@@ -354,8 +341,8 @@ void MainWindow::drawGraph()
 	int height = pixbuf->get_height();
 	int width = pixbuf->get_width();
 
-	float maxwidth = m_image.get_allocated_width() + 0.0;
-	float maxheight = m_image.get_allocated_height() + 0.0;
+	float maxwidth = m_Image.get_allocated_width() + 0.0;
+	float maxheight = m_Image.get_allocated_height() + 0.0;
 
 	if(height>maxheight || width>maxwidth)
 	{
@@ -366,9 +353,9 @@ void MainWindow::drawGraph()
 	}
 
 	if(selecteditems.size() == 0)
-		m_image.set("dbanalyze.png");
+		m_Image.set("dbanalyze.png");
 	else
-		m_image.set(pixbuf);
+		m_Image.set(pixbuf);
 
 	// Draw clutter Stage
 	clutterstage.draw(&tablelist);
@@ -387,7 +374,7 @@ void MainWindow::on_worker_notification()
 {
 	std::string msg;
 	m_Worker.get_data(&msg);
-	m_header_bar.set_subtitle(msg);
+	m_HeaderBar.set_subtitle(msg);
 
 	if (m_WorkerThread && m_Worker.has_stopped())
 	{
@@ -398,7 +385,7 @@ void MainWindow::on_worker_notification()
 		m_WorkerThread = nullptr;
 		tl.fillTable(this->db.getTablelist());
 
-		on_drawgraph_button_clicked();
-		m_search_bar.set_search_mode(false);
+		on_redraw_button_clicked();
+		m_SearchBarConnection.set_search_mode(false);
 	}
 }

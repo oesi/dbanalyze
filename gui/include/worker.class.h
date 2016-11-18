@@ -14,8 +14,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef WORKER_H
-#define WORKER_H
+#ifndef DBA_WORKER_H
+#define DBA_WORKER_H
 
 #include <gtkmm.h>
 #include <thread>
@@ -40,4 +40,4 @@ private:
 	std::string m_message;
 };
 
-#endif // WORKER_H
+#endif // DBA_WORKER_H

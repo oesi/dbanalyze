@@ -20,8 +20,6 @@
 #include "mainwindow.class.h"
 #include <exception>
 #define DBANALYZE_CONFIG_MAX_DEFAULT_SELECTED_ITEMS 5
-using std::sprintf;
-using std::strtol;
 
 tablelist::tablelist(void *mw)
 : m_VBox(Gtk::ORIENTATION_VERTICAL)

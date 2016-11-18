@@ -13,8 +13,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-#ifndef DBA_tablelist_H
-#define DBA_tablelist_H
+#ifndef DBA_TABLELIST_H
+#define DBA_TABLELIST_H
 
 #include <gtkmm.h>
 #include "table.class.h"
@@ -60,4 +60,4 @@ protected:
 	Glib::RefPtr<Gtk::TreeStore> m_refTreeModel;
 };
 
-#endif //DBA_tablelist_H
+#endif //DBA_TABLELIST_H
