@@ -1,5 +1,5 @@
-#ifndef DBA_GRAPH
-#define DBA_GRAPH
+#ifndef DBA_GRAPH_CLASS
+#define DBA_GRAPH_CLASS
 #include <graphviz/gvc.h>
 
 struct image_type
@@ -22,4 +22,4 @@ protected:
 	Agraph_t *g;
 	image_type image;
 };
-#endif
+#endif // DBA_GRAPH_CLASS

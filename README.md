@@ -31,6 +31,8 @@ Supported Databases
 ```
 apt-get install gtkmm-3.0-1
 apt-get install libgda-5.0-dev
+apt-get install graphviz
+
 # PostgreSQL Support
 apt-get install libgda-5.0-postgres
 # MySQL Support
@@ -41,15 +43,7 @@ apt-get install libgda-5.0-mysql
 # it to /usr/lib/libgda-5.0/providers
 apt-get install libgda-5.0-mdb
 
-# Commandline tools
-apt-get install libgda-5.0-bin
-```
-# Commandline List Supported Databases
-```
-gda-sql-5.0 -L
-```
-
-Start ./car.sh to compile an run the application
+Start ./car.sh gui to compile an run the application
 
 ## Run Commandline Application
 ./cli/bin/dbanalyze_cli --help
@@ -69,3 +63,12 @@ source export.sh
 
 GNOME Data Access
 https://developer.gnome.org/libgda/stable/
+
+# Debugging
+# Commandline tools
+apt-get install libgda-5.0-bin
+```
+# Commandline List Supported Databases
+```
+gda-sql-5.0 -L
+```

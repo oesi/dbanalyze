@@ -1,5 +1,5 @@
-#ifndef DATABASECLASS
-#define DATABASECLASS
+#ifndef DBA_DATABASE_CLASS
+#define DBA_DATABASE_CLASS
 
 #include "table.class.h"
 #include <string>
@@ -33,4 +33,4 @@ class database
 		long row_id;
 };
 
-#endif //DATABASECLASS
+#endif //DBA_DATABASE_CLASS

@@ -1,5 +1,5 @@
-#ifndef CONSTRAINTCLASS
-#define CONSTRAINTCLASS
+#ifndef DBA_CONSTRAINT_CLASS
+#define DBA_CONSTRAINT_CLASS
 
 #include "column.class.h"
 #include <string>
@@ -18,4 +18,4 @@ class constraint
 		std::string constraint_name;
 };
 
-#endif //CONSTRAINTCLASS
+#endif //DBA_CONSTRAINT_CLASS

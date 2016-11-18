@@ -1,12 +1,11 @@
-#ifndef TABLECLASS
-#define TABLECLASS
+#ifndef DBA_TABLE_CLASS
+#define DBA_TABLE_CLASS
 
 #include "column.class.h"
 #include "constraint.class.h"
 
 #include <string>
 #include <vector>
-//#include <sql-parser/gda-sql-parser.h>
 
 class table
 {
@@ -23,4 +22,4 @@ class table
 		long row_count;
 };
 
-#endif //TABLECLASS
+#endif //DBA_TABLE_CLASS

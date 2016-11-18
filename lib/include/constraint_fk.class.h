@@ -1,5 +1,5 @@
-#ifndef CONSTRAINT_FK_CLASS
-#define CONSTRAINT_FK_CLASS
+#ifndef DBA_CONSTRAINT_FK_CLASS
+#define DBA_CONSTRAINT_FK_CLASS
 #include "constraint.class.h"
 
 class constraint_fk: public constraint
@@ -13,4 +13,4 @@ class constraint_fk: public constraint
 		column* target;
 };
 
-#endif //CONSTRAINT_FK_CLASS
+#endif //DBA_CONSTRAINT_FK_CLASS

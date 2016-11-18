@@ -1,5 +1,5 @@
-#ifndef STATISTICCLASS
-#define STATISTICCLASS
+#ifndef DBA_STATISTIC_CLASS
+#define DBA_STATISTIC_CLASS
 
 #include "table.class.h"
 #include "constraint_fk.class.h"
@@ -32,4 +32,4 @@ class statistic
 		float maximum_score;
 };
 
-#endif //STATISTICCLASS
+#endif //DBA_STATISTIC_CLASS

@@ -1,5 +1,5 @@
-#ifndef CONSTRAINT_uk_CLASS
-#define CONSTRAINT_uk_CLASS
+#ifndef DBA_CONSTRAINT_UK_CLASS
+#define DBA_CONSTRAINT_UK_CLASS
 #include "constraint.class.h"
 
 class constraint_uk: public constraint
@@ -10,4 +10,4 @@ class constraint_uk: public constraint
 		~constraint_uk();
 };
 
-#endif //CONSTRAINT_uk_CLASS
+#endif //DBA_CONSTRAINT_UK_CLASS

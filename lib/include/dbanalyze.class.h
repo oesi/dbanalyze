@@ -1,5 +1,5 @@
-#ifndef DBANALYZECLASS
-#define DBANALYZECLASS
+#ifndef DBA_DBANALYZE_CLASS
+#define DBA_DBANALYZE_CLASS
 #include "table.class.h"
 #include "graph.class.h"
 #include <string>
@@ -29,4 +29,4 @@ class dbanalyze
 		database *db = NULL;
 };
 
-#endif //DBANALYZECLASS
+#endif //DBA_DBANALYZE_CLASS

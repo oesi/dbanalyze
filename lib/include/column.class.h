@@ -1,5 +1,5 @@
-#ifndef COLUMNCLASS
-#define COLUMNCLASS
+#ifndef DBA_COLUMN_CLASS
+#define DBA_COLUMN_CLASS
 
 #include <string>
 
@@ -18,4 +18,4 @@ class column
 		std::string is_nullable;
 };
 
-#endif //COLUMNCLASS
+#endif //DBA_COLUMN_CLASS

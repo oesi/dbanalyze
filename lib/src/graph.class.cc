@@ -7,6 +7,9 @@
 #include <graphviz/gvc.h>
 #include <iostream>
 
+/**
+ * Render a tablelist as Graph using the Graphviz Library
+ */
 graph::graph(std::vector<table> *tablelist)
 {
 	std::map<std::string,std::vector<table*>> list;
@@ -16,12 +19,6 @@ graph::graph(std::vector<table> *tablelist)
 
 	/* set up a graphviz context */
 	this->gvc = gvContext();
-
-	// set outputfile, filetype, and graphtype
-	//char* args[] = {(char*)"dot"};
-
-	/* parse command line args - minimally argv[0] sets layout engine */
-	//gvParseArgs(gvc, sizeof(args)/sizeof(char*), args);
 
 	/* Create a simple digraph */
 	g = agopen((char*)"g", Agdirected, 0);
@@ -122,7 +119,7 @@ graph::graph(std::vector<table> *tablelist)
 					}
 					else
 					{
-						// if fk goes outside the schema create a Node with label and link to it
+						// if target table is not present in the graph create a Node with label and link to it
 						std::string target = t1->schemaname + "." + t1->tablename+"."+fk->target->columnname.c_str();
 						if(tbl->constraintlist[j]->source)
 						{
@@ -152,11 +149,19 @@ graph::graph(std::vector<table> *tablelist)
 	gvRenderData(gvc, g, "png", &image.image_buffer, &image.image_size);
 }
 
+/**
+ * Get Graph as image
+ */
 image_type graph::getImage()
 {
 	return image;
 }
 
+/**
+ * Save the generated Graph to a File
+ * @param std::string name Filename with path
+ * @param std::string format File Format (pdf, png)
+ */
 void graph::write(std::string name, std::string format)
 {
 	std::string filename = "-o"+name;

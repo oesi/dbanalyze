@@ -1,3 +1,6 @@
+#ifndef DBA_COLORGENERATOR_CLASS
+#define DBA_COLORGENERATOR_CLASS
+
 #include <string>
 
 class colorgenerator
@@ -10,3 +13,5 @@ public:
 	int b;
 	std::string hex;
 };
+
+#endif //DBA_COLORGENERATOR
