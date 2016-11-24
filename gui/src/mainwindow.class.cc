@@ -36,10 +36,8 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& /*app*/)
 
 	m_ButtonHeaderbarConnect.set_image_from_icon_name("document-open-symbolic", Gtk::ICON_SIZE_BUTTON, true);
 	m_ButtonHeaderbarExport.set_image_from_icon_name("document-save-symbolic", Gtk::ICON_SIZE_BUTTON, true);
-	m_ButtonHeaderbarStatistic.set_image_from_icon_name("dialog-information-symbolic", Gtk::ICON_SIZE_BUTTON, true);
 	m_ButtonHeaderbarConnect.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_headerbarconnect_button_clicked));
 	m_ButtonHeaderbarExport.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_headerbarexport_button_clicked));
-	m_ButtonHeaderbarStatistic.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_statistic_button_clicked));
 	m_Dispatcher.connect(sigc::mem_fun(*this, &MainWindow::on_worker_notification));
 
 	m_HeaderBar.set_title("DBAnalyze");
@@ -47,7 +45,6 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& /*app*/)
 	m_HeaderBar.set_show_close_button();
 	m_HeaderBar.pack_start(m_ButtonHeaderbarConnect);
 	m_HeaderBar.pack_start(m_ButtonHeaderbarExport);
-	m_HeaderBar.pack_start(m_ButtonHeaderbarStatistic);
 
 	// Set headerbar as titlebar
 	set_titlebar(m_HeaderBar);
@@ -78,8 +75,12 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& /*app*/)
 	//Only show the scrollbars when they are necessary:
 	m_ScrollWindowGraph.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
 
+	m_ScrolledWindowStatistic.add(m_TextViewStatistic);
+	m_ScrolledWindowStatistic.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
+
 	m_Notebook.append_page(m_ScrollWindowGraph, "Automatic Graph");
 	m_Notebook.append_page(m_clutterstage, "Dynamic Graph");
+	m_Notebook.append_page(m_ScrolledWindowStatistic, "Statistic");
 	m_Notebook.set_scrollable();
 	m_PanedMain.pack2(m_Notebook);
 	m_PanedMain.set_position(250);
@@ -156,10 +157,8 @@ void MainWindow::on_headerbarconnect_button_clicked()
 	m_SearchBarConnection.set_search_mode(!m_SearchBarConnection.get_search_mode());
 }
 
-void MainWindow::on_statistic_button_clicked()
+void MainWindow::setStatistic()
 {
-	Gtk::MessageDialog dialog(*this, "statistic");
-
 	statistic stat;
 	stat.analyze(this->m_db.getTablelist());
 
@@ -196,9 +195,9 @@ void MainWindow::on_statistic_button_clicked()
 	outmsg << "Score: " << stat.score << std::endl;
 	outmsg << "Percent: " << 100/stat.maximum_score*stat.score << std::endl;
 
-	dialog.set_secondary_text(outmsg.str());
-
-	dialog.run();
+	m_refTextBufferStatistic = Gtk::TextBuffer::create();
+	m_refTextBufferStatistic->set_text(outmsg.str());
+	m_TextViewStatistic.set_buffer(m_refTextBufferStatistic);
 }
 
 /**
@@ -402,5 +401,6 @@ void MainWindow::on_worker_notification()
 		m_clutterstage.clearStage();
 		this->drawGraph();
 		m_SearchBarConnection.set_search_mode(false);
+		this->setStatistic();
 	}
 }

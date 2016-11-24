@@ -36,7 +36,7 @@ public:
 	void on_infobar_response(int response);
 	void on_headerbarconnect_button_clicked();
 	void on_headerbarexport_button_clicked();
-	void on_statistic_button_clicked();
+	void setStatistic();
 
 	dbanalyze m_db;
 	tablelist m_tablelist;
@@ -54,7 +54,6 @@ public:
 	Gtk::Paned m_PanedMain;
 	Gtk::Button m_ButtonHeaderbarConnect;
 	Gtk::Button m_ButtonHeaderbarExport;
-	Gtk::Button m_ButtonHeaderbarStatistic;
 	Gtk::Button m_ButtonConnect;
 	Gtk::HeaderBar m_HeaderBar;
 	Gtk::Entry m_EntryUser;
@@ -68,6 +67,9 @@ public:
 	Gtk::Label m_LabelInfobar;
 	Gtk::Image m_Image;
 	Gtk::ScrolledWindow m_ScrollWindowGraph;
+	Gtk::ScrolledWindow m_ScrolledWindowStatistic;
+	Gtk::TextView m_TextViewStatistic;
+	Glib::RefPtr<Gtk::TextBuffer> m_refTextBufferStatistic;
 	Gtk::Notebook m_Notebook;
 };
 
