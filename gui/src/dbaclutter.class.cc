@@ -49,6 +49,11 @@ void on_actor_dragmotion (ClutterDragAction* /*action*/,
 		}
 	}
 }
+
+/**
+ * Constructor
+ * @param mw Pointer to the MainWindow
+ */
 dbaclutter::dbaclutter(void* mw)
 {
 	char** args;
@@ -61,6 +66,7 @@ dbaclutter::dbaclutter(void* mw)
 
 	this->mw = mw;
 
+	// Create the Clutter Stage
 	clutter0 = gtk_clutter_embed_new();
 	Gtk::Widget *mmclutter = Glib::wrap(clutter0);
 	this->add(*mmclutter);
@@ -74,24 +80,37 @@ dbaclutter::~dbaclutter()
 {
 }
 
+/**
+ * Clear Stage and reset positions on reload
+ */
+void dbaclutter::clearStage()
+{
+	last_x_position=10;
+	last_y_position=10;
+	next_x_position=10;
+	clutter_actor_destroy_all_children(stage);
+}
+
+/**
+ * Draw the list of tables on the clutter stage
+ * @param *tablelist vector of tables
+ */
 void dbaclutter::draw(std::vector<table> *tablelist)
 {
 	ClutterColor stage_color = { 255, 255, 255, 255 };
-
-	//clutter_actor_set_size (stage, 100, 100);
 	clutter_actor_set_background_color (stage, &stage_color);
 
+	// Hide all Children
 	GList *children = clutter_actor_get_children(stage);
 	for(ClutterActor *i;children; children = children->next)
 	{
 		i = static_cast<ClutterActor*>(children->data);
-
 		clutter_actor_hide(i);
 	}
 
 	for(unsigned int i=0; i<tablelist->size();i++)
 	{
-		drawtable(&tablelist->at(i));
+		drawTable(&tablelist->at(i));
 	}
 
 	table *tbl;
@@ -125,7 +144,7 @@ void dbaclutter::draw(std::vector<table> *tablelist)
 
 }
 
-void dbaclutter::drawtable(table *tbl)
+void dbaclutter::drawTable(table *tbl)
 {
 
 	std::string name = tbl->schemaname + "." + tbl->tablename;
@@ -244,7 +263,7 @@ void dbaclutter::drawtable(table *tbl)
 	last_y_position = y_position;
 }
 
-void dbaclutter::export_graph(std::string filename, std::string format)
+void dbaclutter::exportGraph(std::string filename, std::string format)
 {
 	int width = clutter_actor_get_width(this->stage);
 	int height = clutter_actor_get_height(this->stage);
@@ -275,7 +294,7 @@ void dbaclutter::drawLine(std::string name, ClutterActor *actor1, ClutterActor *
 	ClutterActor *parent;
 	parent = clutter_actor_get_parent(actor1);
 
-	get_line_position(actor1, actor2, &x, &y, &len, &angle);
+	getLinePosition(actor1, actor2, &x, &y, &len, &angle);
 
 	colorgenerator colorobj(name);
 	ClutterActor *myline = clutter_actor_new ();
@@ -297,22 +316,22 @@ void dbaclutter::redrawLine(ClutterActor *line, ClutterActor *actor1, ClutterAct
 {
 	float x,y,len,angle;
 
-	get_line_position(actor1, actor2, &x, &y, &len, &angle);
+	getLinePosition(actor1, actor2, &x, &y, &len, &angle);
 
 	clutter_actor_set_position(line, x, y);
 	clutter_actor_set_size(line, len, 2);
 	clutter_actor_set_rotation_angle (line, CLUTTER_Z_AXIS, angle);
 }
 
-void dbaclutter::get_line_position(ClutterActor *actor1, ClutterActor *actor2, float *x, float *y, float *len, float *angle)
+void dbaclutter::getLinePosition(ClutterActor *actor1, ClutterActor *actor2, float *x, float *y, float *len, float *angle)
 {
 	float actor1x, actor1y, actor2x, actor2y;
 	float actorRightX, actorRightY, actorLeftX, actorLeftY;
 	float lenX, lenY, anglecorrection;
 	bool p1;
 
-	helper_clutter_actor_get_center_position(actor1, &actor1x, &actor1y);
-	helper_clutter_actor_get_center_position(actor2, &actor2x, &actor2y);
+	getActorCenterPosition(actor1, &actor1x, &actor1y);
+	getActorCenterPosition(actor2, &actor2x, &actor2y);
 
 	if(actor1x>=actor2x)
 	{
@@ -372,7 +391,7 @@ void dbaclutter::get_line_position(ClutterActor *actor1, ClutterActor *actor2, f
 		*angle = (atan(lenX / lenY)/(2*M_PI)*360)+anglecorrection;
 }
 
-void dbaclutter::helper_clutter_actor_get_center_position(ClutterActor *actor, float *x, float *y)
+void dbaclutter::getActorCenterPosition(ClutterActor *actor, float *x, float *y)
 {
 	float sizeX, sizeY;
 	float posX, posY;

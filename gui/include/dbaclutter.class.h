@@ -28,17 +28,15 @@ public:
 	dbaclutter(void *mw);
 	virtual ~dbaclutter();
 	void draw(std::vector<table> *tablelist);
-
-	void drawtable(table *tbl);
-	void export_graph(std::string filename, std::string format);
-
+	void clearStage();
+	void drawTable(table *tbl);
+	void exportGraph(std::string filename, std::string format);
 	void drawLine(std::string name, ClutterActor *actor1, ClutterActor *actor2);
 	void redrawLine(ClutterActor *line, ClutterActor *actor1, ClutterActor *actor2);
-	void get_line_position(ClutterActor *actor1, ClutterActor *actor2, float *x, float *y, float *len, float *angle);
-	void helper_clutter_actor_get_center_position(ClutterActor *actor, float *x, float *y);
+	void getLinePosition(ClutterActor *actor1, ClutterActor *actor2, float *x, float *y, float *len, float *angle);
+	void getActorCenterPosition(ClutterActor *actor, float *x, float *y);
 
 	std::map<std::string,constraint_fk*> constraintlist;
-
 
 protected:
 	void *mw;

@@ -30,18 +30,17 @@ public:
 	virtual ~MainWindow();
 	void drawGraph();
 	void notify();
-	void on_worker_notification();
 	void addDatabaseEntrys();
+	void on_worker_notification();
 	void on_button_connect_clicked();
 	void on_infobar_response(int response);
 	void on_headerbarconnect_button_clicked();
 	void on_headerbarexport_button_clicked();
-	void on_redraw_button_clicked();
 	void on_statistic_button_clicked();
 
-	dbanalyze db;
-	tablelist tl;
-	dbaclutter clutterstage;
+	dbanalyze m_db;
+	tablelist m_tablelist;
+	dbaclutter m_clutterstage;
 	Glib::Dispatcher m_Dispatcher;
 	std::thread* m_WorkerThread;
 	Worker m_Worker;
@@ -57,7 +56,6 @@ public:
 	Gtk::Button m_ButtonHeaderbarExport;
 	Gtk::Button m_ButtonHeaderbarStatistic;
 	Gtk::Button m_ButtonConnect;
-	Gtk::Button m_ButtonRedraw;
 	Gtk::HeaderBar m_HeaderBar;
 	Gtk::Entry m_EntryUser;
 	Gtk::Entry m_EntryPass;

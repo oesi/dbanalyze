@@ -54,12 +54,12 @@ void Worker::do_work(void* caller)
 	std::string user = mw->m_EntryUser.get_text();
 	std::string password = mw->m_EntryPass.get_text();
 
-	if(mw->db.connect(type, host, port, user, password, dbname))
+	if(mw->m_db.connect(type, host, port, user, password, dbname))
 	{
 		m_message = "Loading Data...";
 		mw->notify();
 
-		mw->db.loadData(false);
+		mw->m_db.loadData(false);
 		m_message = "Data loaded!";
 
 	}

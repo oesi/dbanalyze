@@ -23,16 +23,13 @@
 #include <thread>
 #include <mutex>
 
-MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
-: 	tl(this),
-	clutterstage(this),
+MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& /*app*/)
+: 	m_tablelist(this),
+	m_clutterstage(this),
 	m_VBoxMain(Gtk::ORIENTATION_VERTICAL, 6),
 	m_BoxTable(Gtk::ORIENTATION_VERTICAL),
 	m_PanedMain(Gtk::ORIENTATION_HORIZONTAL)
 {
-	// Cast app to void to remove compiler warning
-	(void) app;
-
 	m_WorkerThread=NULL;
 	set_title("DBAnalyze");
 	set_size_request(800, 600);
@@ -43,7 +40,6 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 	m_ButtonHeaderbarConnect.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_headerbarconnect_button_clicked));
 	m_ButtonHeaderbarExport.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_headerbarexport_button_clicked));
 	m_ButtonHeaderbarStatistic.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_statistic_button_clicked));
-	m_ButtonRedraw.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_redraw_button_clicked));
 	m_Dispatcher.connect(sigc::mem_fun(*this, &MainWindow::on_worker_notification));
 
 	m_HeaderBar.set_title("DBAnalyze");
@@ -74,11 +70,7 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 
 	addDatabaseEntrys();
 
-	m_BoxTable.pack_start(tl);
-
-	m_ButtonRedraw.set_label("Redraw Graph");
-	m_BoxTable.pack_start(m_ButtonRedraw,Gtk::PACK_SHRINK);
-
+	m_BoxTable.pack_start(m_tablelist);
 	m_VBoxMain.pack_start(m_PanedMain);
 	m_PanedMain.pack1(m_BoxTable);
 	m_ScrollWindowGraph.add(m_Image);
@@ -86,8 +78,8 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 	//Only show the scrollbars when they are necessary:
 	m_ScrollWindowGraph.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
 
-	m_Notebook.append_page(m_ScrollWindowGraph, "Graph");
-	m_Notebook.append_page(clutterstage, "ClutterStage");
+	m_Notebook.append_page(m_ScrollWindowGraph, "Automatic Graph");
+	m_Notebook.append_page(m_clutterstage, "Dynamic Graph");
 	m_Notebook.set_scrollable();
 	m_PanedMain.pack2(m_Notebook);
 	m_PanedMain.set_position(250);
@@ -96,6 +88,9 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 	m_InfoBar.hide();
 }
 
+/**
+ * Add Textfields for database connection
+ */
 void MainWindow::addDatabaseEntrys()
 {
 	m_SearchBarConnection.add(m_BoxConnection);
@@ -153,6 +148,9 @@ void MainWindow::on_infobar_response(int)
 	m_InfoBar.hide();
 }
 
+/**
+ * Displays or hides connection-bar
+ */
 void MainWindow::on_headerbarconnect_button_clicked()
 {
 	m_SearchBarConnection.set_search_mode(!m_SearchBarConnection.get_search_mode());
@@ -163,7 +161,7 @@ void MainWindow::on_statistic_button_clicked()
 	Gtk::MessageDialog dialog(*this, "statistic");
 
 	statistic stat;
-	stat.analyze(this->db.getTablelist());
+	stat.analyze(this->m_db.getTablelist());
 
 	std::stringstream outmsg;
 	outmsg << "Tables without PK:" << stat.tables_without_pk.size() << std::endl;
@@ -203,11 +201,15 @@ void MainWindow::on_statistic_button_clicked()
 	dialog.run();
 }
 
+/**
+ * When Connect button is clicked an extra thread is started
+ * to load the data from the database
+ */
 void MainWindow::on_button_connect_clicked()
 {
 	if (m_WorkerThread)
 	{
-		std::cout << "Can't start a worker thread while another one is running." << std::endl;
+		std::cout << "Data Loading is currently in progress - please wait" << std::endl;
 	}
 	else
 	{
@@ -220,11 +222,10 @@ void MainWindow::on_button_connect_clicked()
 	}
 }
 
-void MainWindow::on_redraw_button_clicked()
-{
-	this->drawGraph();
-}
-
+/**
+ * Display a dialog for saving the graph
+ * and export the graph in the needed format
+ */
 void MainWindow::on_headerbarexport_button_clicked()
 {
 	int page = m_Notebook.get_current_page();
@@ -270,11 +271,11 @@ void MainWindow::on_headerbarexport_button_clicked()
 			if(page==0)
 			{
 				// Create a vector with all selected tables
-				selecteditems = tl.getSelected();
+				selecteditems = m_tablelist.getSelected();
 				std::vector<table> tablelist;
 				for(auto & i:selecteditems)
 				{
-					table *tbl = this->db.getTable(i.second["schemaname"],i.second["tablename"]);
+					table *tbl = this->m_db.getTable(i.second["schemaname"],i.second["tablename"]);
 					if(tbl)
 						tablelist.push_back(*tbl);
 				}
@@ -285,7 +286,7 @@ void MainWindow::on_headerbarexport_button_clicked()
 				break;
 			}
 			else
-				clutterstage.export_graph(filename, format);
+				m_clutterstage.exportGraph(filename, format);
 
 		}
 		case(Gtk::RESPONSE_CANCEL):
@@ -301,16 +302,19 @@ void MainWindow::on_headerbarexport_button_clicked()
 	}
 }
 
+/**
+ * Draw the grah with all tables that where selected from the tree
+ */
 void MainWindow::drawGraph()
 {
 	std::map<std::string, std::map<std::string, std::string>> selecteditems;
 
 	// Create a vector with all selected tables
-	selecteditems = tl.getSelected();
+	selecteditems = m_tablelist.getSelected();
 	std::vector<table> tablelist;
 	for(auto & i:selecteditems)
 	{
-		table *tbl = this->db.getTable(i.second["schemaname"],i.second["tablename"]);
+		table *tbl = this->m_db.getTable(i.second["schemaname"],i.second["tablename"]);
 		if(tbl)
 			tablelist.push_back(*tbl);
 	}
@@ -358,20 +362,30 @@ void MainWindow::drawGraph()
 		m_Image.set(pixbuf);
 
 	// Draw clutter Stage
-	clutterstage.draw(&tablelist);
+	m_clutterstage.draw(&tablelist);
 }
 
 MainWindow::~MainWindow()
 {
 }
 
+/**
+ * Function is called when loading from the database has finished
+ */
 void MainWindow::notify()
 {
+	// calls on_worker_notification
 	m_Dispatcher.emit();
 }
 
+/**
+ * Sets a Message to the Headerbar while loading data from the database
+ * and fills the Tabletree when loading finished
+ */
 void MainWindow::on_worker_notification()
 {
+	// get message from the worker thread and display
+	// it in the headerbar
 	std::string msg;
 	m_Worker.get_data(&msg);
 	m_HeaderBar.set_subtitle(msg);
@@ -383,9 +397,10 @@ void MainWindow::on_worker_notification()
 			m_WorkerThread->join();
 		delete m_WorkerThread;
 		m_WorkerThread = nullptr;
-		tl.fillTable(this->db.getTablelist());
+		m_tablelist.fillTable(this->m_db.getTablelist());
 
-		on_redraw_button_clicked();
+		m_clutterstage.clearStage();
+		this->drawGraph();
 		m_SearchBarConnection.set_search_mode(false);
 	}
 }
