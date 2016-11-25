@@ -59,7 +59,7 @@ void Worker::do_work(void* caller)
 		m_message = "Loading Data...";
 		mw->notify();
 
-		mw->m_db.loadData(false);
+		mw->m_db.loadData(true);
 		m_message = "Data loaded!";
 
 	}
