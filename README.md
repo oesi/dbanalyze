@@ -29,6 +29,8 @@ Supported Databases
 ## Install
 
 ```
+
+apt-get install qt4-qmake
 apt-get install gtkmm-3.0-1
 apt-get install libgda-5.0-dev
 apt-get install graphviz
@@ -58,6 +60,9 @@ source export.sh
 
 ## Run GUI
 -/gui/bin/dbanalyze_gui
+
+## Build Debian Package
+dpkg-buildpackage -us -uc
 
 ## Additional Links
 

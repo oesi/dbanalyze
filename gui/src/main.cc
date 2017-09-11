@@ -18,6 +18,12 @@
 
 int main(int argc, char *argv[])
 {
+	if(CLUTTER_INIT_SUCCESS !=clutter_init (&argc, &argv))
+	{
+		std::cout << "clutter init failed" << std::endl;
+		return 0;
+	}
+	
 	auto app = Gtk::Application::create(argc, argv, "org.oesi.dbanalyze");
 	MainWindow window(app);
 

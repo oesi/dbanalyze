@@ -70,6 +70,7 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& /*app*/)
 	m_BoxTable.pack_start(m_tablelist);
 	m_VBoxMain.pack_start(m_PanedMain);
 	m_PanedMain.pack1(m_BoxTable);
+
 	m_ScrollWindowGraph.add(m_Image);
 	m_Image.set("dbanalyze.png");
 	//Only show the scrollbars when they are necessary:

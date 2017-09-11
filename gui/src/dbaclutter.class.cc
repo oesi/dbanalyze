@@ -56,14 +56,6 @@ void on_actor_dragmotion (ClutterDragAction* /*action*/,
  */
 dbaclutter::dbaclutter(void* mw)
 {
-	char** args;
-	int cnt = 0;
-	if(CLUTTER_INIT_SUCCESS !=clutter_init (&cnt, &args))
-	{
-		std::cout << "clutter init failed" << std::endl;
-		return;
-	}
-
 	this->mw = mw;
 
 	// Create the Clutter Stage
@@ -277,6 +269,11 @@ void dbaclutter::exportGraph(std::string filename, std::string format)
 void dbaclutter::drawLine(std::string name, ClutterActor *actor1, ClutterActor *actor2)
 {
 	float x,y,len,angle;
+
+	if(!actor1 || !actor2)
+		return;
+	if(!clutter_actor_is_visible(actor1) || !clutter_actor_is_visible(actor2))
+		return;
 
 	GList *children = clutter_actor_get_children(stage);
 	for(ClutterActor *i;children; children = children->next)
